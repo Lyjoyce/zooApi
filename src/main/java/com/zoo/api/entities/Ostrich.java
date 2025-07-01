@@ -1,0 +1,31 @@
+package com.zoo.api.entities;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
+import lombok.*;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Ostrich {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String name;
+
+    private int age;  // age en années
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;  // utilisation de l'enum Gender
+
+    private boolean active = true; // soft delete
+}
