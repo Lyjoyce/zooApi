@@ -14,22 +14,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Adult {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // ← Corrigé
     private Long id;
 
     private String firstName;
     private String lastName;
     private String email;
     private String phone;
-    
-    @JsonIgnore // Ne jamais renvoyer le password dans l’API
+
+    @JsonIgnore // ← Sécurisation de l’API
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role; // PROFESSEUR, PARENT, AUXILIAIRE
 
-    private boolean active = true; // soft delete
+    private boolean active = true; // ← Pour soft delete
 
-    @OneToMany(mappedBy = "responsibleAdult")
+    @OneToMany(mappedBy = "responsibleAdult", cascade = CascadeType.ALL)
     private List<Child> children;
 }

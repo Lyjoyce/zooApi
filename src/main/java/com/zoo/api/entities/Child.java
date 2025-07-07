@@ -11,7 +11,7 @@ import lombok.*;
 public class Child {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;
@@ -22,5 +22,5 @@ public class Child {
     private boolean active = true; // soft delete
 
     @ManyToOne
-    private Adult responsibleAdult;
+    private Adult adult;
 }

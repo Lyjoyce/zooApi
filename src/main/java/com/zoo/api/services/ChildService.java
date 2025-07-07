@@ -1,20 +1,39 @@
 package com.zoo.api.services;
 
-import com.zoo.api.entities.Child;
-import com.zoo.api.repositories.ChildRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.zoo.api.entities.Adult;
+import com.zoo.api.entities.Child;
+import com.zoo.api.repositories.AdultRepository;
+import com.zoo.api.repositories.ChildRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ChildService {
 
     private final ChildRepository childRepository;
+    private final AdultRepository adultRepository;
 
     public Child saveChild(Child child) {
+        if (child.getAdult() == null || child.getAdult().getId() == null) {
+            throw new IllegalArgumentException("L'adulte associé est requis pour enregistrer un enfant.");
+        }
+
+        Long adultId = child.getAdult().getId();
+
+        Adult adult = adultRepository.findById(adultId)
+                .orElseThrow(() -> new IllegalArgumentException("Adulte non trouvé avec l’ID : " + adultId));
+
+        if (adult.getChildren().size() >= 6) {
+            throw new IllegalArgumentException("Un adulte ne peut pas avoir plus de 6 enfants.");
+        }
+
+        child.setAdult(adult); // Associe l’adulte complet à l’enfant
         return childRepository.save(child);
     }
 

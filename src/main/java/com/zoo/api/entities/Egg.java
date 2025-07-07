@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class Egg {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDate dateLaid;

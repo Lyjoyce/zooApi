@@ -32,13 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 
-# === BASE DE DONNÉES ===
-DB_HOST=mysql-kakti.alwaysdata.net
-DB_PORT=3306
-DB_NAME=kakti_zooapi
-DB_USER=kakti
-DB_PASSWORD=PO144anes!REINE
-
-# === ACCÈS ADMIN POUR TEST ===
-ADMIN_USER=admin
-ADMIN_PASSWORD=admin
+# === FICHIERS SENSIBLES ===
+.env

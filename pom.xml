@@ -62,12 +62,6 @@
             <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
-        <!--"dotenv-java" — Java library for loading environment variables from a .env file-->
-        <dependency>
-    		<groupId>io.github.cdimascio</groupId>
-    		<artifactId>dotenv-java</artifactId>
-    		<version>3.0.0</version>
-		</dependency>
 
         <!-- Test -->
         <dependency>
@@ -81,7 +75,26 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        
+        <!-- JWT JSON Web Token -->
+        <dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId> <!-- ou jjwt-gson -->
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+
+       <!--"dotenv-java" — Java library for loading environment variables from a .env file-->  
         <dependency>
     <groupId>io.github.cdimascio</groupId>
     <artifactId>java-dotenv</artifactId>
