@@ -15,4 +15,6 @@ public class ChildDTO {
     private String lastName;
     private int age;
     private String schoolClass;  // Exemple : "CE2"
+    private Long adultId;        // Ajouté pour vérifier le quota d’enfants
 }
+
