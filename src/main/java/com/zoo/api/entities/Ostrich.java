@@ -27,6 +27,7 @@ public class Ostrich {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;  // utilisation de l'enum Gender
-
+    
+    @Builder.Default
     private boolean active = true; // soft delete
 }
