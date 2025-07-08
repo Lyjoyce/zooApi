@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version> <!-- dernière version stable connue en juin 2025 -->
+        <version>3.5.3</version> <!-- dernière version stable connue en juin 2025 -->
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
