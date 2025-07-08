@@ -1,8 +1,6 @@
 package com.zoo.api.entities;
 
 public enum Role {
-    PROFESSEUR, PARENT, AUXILIAIRE
+    ROLE_ADMIN,
+    ROLE_EMPLOYE
 }
-
-
-
