@@ -26,7 +26,7 @@ public class Adult {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role; // pour Spring Security, def les droits
+    private Role role; // pour Spring Security, def les droits, uniquement pour admin/employé, jamais à l'inscription
 
     @Enumerated(EnumType.STRING)
     private AdultType type; // pour savoir si c'est un professeur, parent, ou auxiliaire.

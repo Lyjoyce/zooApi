@@ -20,11 +20,11 @@ public class ChildService {
     private final AdultRepository adultRepository;
 
     public Child saveChild(Child child) {
-        if (child.getAdult() == null || child.getAdult().getId() == null) {
+        if (child.getResponsibleAdult() == null || child.getResponsibleAdult().getId() == null) {
             throw new IllegalArgumentException("L'adulte associé est requis pour enregistrer un enfant.");
         }
 
-        Long adultId = child.getAdult().getId();
+        Long adultId = child.getResponsibleAdult().getId();
 
         Adult adult = adultRepository.findById(adultId)
                 .orElseThrow(() -> new IllegalArgumentException("Adulte non trouvé avec l’ID : " + adultId));
@@ -33,7 +33,7 @@ public class ChildService {
             throw new IllegalArgumentException("Un adulte ne peut pas avoir plus de 6 enfants.");
         }
 
-        child.setAdult(adult); // Associe l’adulte complet à l’enfant
+        child.setResponsibleAdult(adult); // Associe l’adulte complet à l’enfant
         return childRepository.save(child);
     }
 

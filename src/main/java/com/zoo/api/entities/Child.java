@@ -1,7 +1,15 @@
 package com.zoo.api.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -22,5 +30,6 @@ public class Child {
     private boolean active = true; // soft delete
 
     @ManyToOne
-    private Adult adult;
+    @JoinColumn(name = "adult_id")
+    private Adult responsibleAdult;
 }

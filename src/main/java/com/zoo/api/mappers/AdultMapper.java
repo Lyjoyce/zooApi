@@ -16,7 +16,6 @@ public class AdultMapper {
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());
         dto.setEmail(entity.getEmail());
-        dto.setRole(entity.getRole());
         return dto;
     }
 
@@ -29,7 +28,6 @@ public class AdultMapper {
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
         entity.setEmail(dto.getEmail());
-        entity.setRole(dto.getRole());
         return entity;
     }
 }
