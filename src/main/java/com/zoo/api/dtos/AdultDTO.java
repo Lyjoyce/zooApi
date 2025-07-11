@@ -1,5 +1,6 @@
 package com.zoo.api.dtos;
 
+import com.zoo.api.entities.AdultType;
 import com.zoo.api.entities.Role;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +17,9 @@ public class AdultDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private Role role;
+    private String phone;
+    private String password;
+    private AdultType type;   
 }
 
 

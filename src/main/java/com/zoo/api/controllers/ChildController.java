@@ -63,7 +63,7 @@ public class ChildController {
 
         Adult adult = new Adult();
         adult.setId(childDTO.getAdultId());
-        existingChild.setAdult(adult);
+        existingChild.setResponsibleAdult(adult);
 
         try {
             Child updated = childService.saveChild(existingChild);
@@ -89,7 +89,7 @@ public class ChildController {
                 child.getLastName(),
                 child.getAge(),
                 child.getSchoolClass(),
-                child.getAdult() != null ? child.getAdult().getId() : null
+                child.getResponsibleAdult() != null ? child.getResponsibleAdult().getId() : null
         );
     }
 
@@ -104,7 +104,7 @@ public class ChildController {
         if (dto.getAdultId() != null) {
             Adult adult = new Adult();
             adult.setId(dto.getAdultId());
-            child.setAdult(adult);
+            child.setResponsibleAdult(adult);
         }
 
         return child;

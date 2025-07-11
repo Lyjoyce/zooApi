@@ -34,3 +34,4 @@ build/
 
 # === FICHIERS SENSIBLES ===
 .env
+.vscode/launch.json

@@ -3,10 +3,12 @@ package com.zoo.api.dtos;
 import com.zoo.api.entities.AdultType;
 import com.zoo.api.entities.Role;
 
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,10 +31,9 @@ public class RegisterRequest {
     private String phone;
 
     @NotBlank(message = "Le mot de passe est obligatoire")
-    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
+    @Size(min = 14, message = "Le mot de passe doit contenir au moins 6 caractères")
     private String password;
-
-    // Optionnels mais exclusifs (role XOR type)
-    private Role role;
+    
+    @NotNull(message = "Le type doit être précisé (PARENT, PROFESSEUR, AUXILIAIRE)")
     private AdultType type;
 }
