@@ -1,39 +1,63 @@
 package com.zoo.api.security;
 
-import com.zoo.api.entities.Adult;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.util.Date;
+import com.zoo.api.entities.Account;
+import com.zoo.api.entities.Adult;
+
+import io.jsonwebtoken.*;
+
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")// injection depuis application.properties
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Value("${jwt.expiration}")
-    private Long jwtExpiration;
+    private Long jwtExpiration; // Optionnel : peut remplacer EXPIRATION_TIME
 
-    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24h
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24h
+
     private Key key;
 
     @PostConstruct
     public void init() {
-    	this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes()); 
-
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
+    // ---- Génération du token pour Adult
     public String generateToken(Adult adult) {
         return Jwts.builder()
                 .setSubject(adult.getEmail())
                 .claim("id", adult.getId())
-                .claim("role", adult.getRole().toString())
+                .claim("adultType", adult.getType() != null ? adult.getType().name() : "UNKNOWN")// adultType
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // ---- Génération du token pour Account
+    public String generateToken(Account account) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", account.getRole().name());
+        return createToken(claims, account.getEmail());
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -53,14 +77,12 @@ public class JwtUtil {
         }
     }
 
-    // Nouvelle méthode qui valide le token ET correspondance avec userDetails
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
             Claims claims = parseClaims(token);
             String username = claims.getSubject();
-            Date expiration = claims.getExpiration();
-
-            return (username.equals(userDetails.getUsername()) && !expiration.before(new Date()));
+            return (username.equals(userDetails.getUsername()) &&
+                    !claims.getExpiration().before(new Date()));
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }

@@ -40,7 +40,7 @@ public class AdultController {
                     adult.setLastName(updatedAdult.getLastName());
                     adult.setEmail(updatedAdult.getEmail());
                     adult.setPhone(updatedAdult.getPhone());
-                    adult.setRole(updatedAdult.getRole());
+                    adult.setType(updatedAdult.getType());
                     return ResponseEntity.ok(adultService.saveAdult(adult));
                 }).orElse(ResponseEntity.notFound().build());
     }

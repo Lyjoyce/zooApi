@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,7 +21,13 @@ public class Egg {
     private boolean used; // utilisé ou pas pour atelier
 
     private boolean active = true; // soft delete
+    
+    private boolean validatedByVet = false;
+
+    private LocalDate validationDate;
 
     @ManyToOne
     private Ostrich female; // femelle pondeuse
+
+	
 }

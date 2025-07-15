@@ -1,5 +1,7 @@
 package com.zoo.api.entities;
 
+import com.zoo.api.enums.Gender;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,11 +25,11 @@ public class Ostrich {
 
     private String name;
 
-    private int age;  // age en années
+    private int age;  // âge en années
 
     @Enumerated(EnumType.STRING)
     private Gender gender;  // utilisation de l'enum Gender
     
     @Builder.Default
-    private boolean active = true; // soft delete
+    private boolean active = true; // soft delete par défaut à true
 }

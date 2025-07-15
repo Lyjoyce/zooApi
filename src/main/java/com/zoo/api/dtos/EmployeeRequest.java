@@ -1,8 +1,5 @@
 package com.zoo.api.dtos;
 
-import com.zoo.api.enums.AdultType;
-import com.zoo.api.enums.Role;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,18 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdultDTO {
-    private Long id;
+public class EmployeeRequest {
     private String firstName;
     private String lastName;
     private String email;
-    private String phone;
     private String password;
-    private AdultType type;
-    private Role role = Role.ROLE_ADULTE;
-
+    // getters/setters
+	
 }
-
-
-   
 

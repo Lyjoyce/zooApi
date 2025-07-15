@@ -1,15 +1,20 @@
 package com.zoo.api.services;
 
-import com.zoo.api.entities.Egg;
-import com.zoo.api.repositories.EggRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
+import com.zoo.api.entities.Egg;
+import com.zoo.api.repositories.EggRepository;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
+
 public class EggService {
 
     private final EggRepository eggRepository;
@@ -21,6 +26,42 @@ public class EggService {
         }
         return availableEggs.subList(0, quantity);
     }
+    
+    public List<Egg> getValidEggsForAtelier() {
+        return eggRepository.findByUsedFalseAndActiveTrueAndValidatedByVetTrue();
+    }
+    public List<Egg> getEggsToValidate() {
+        LocalDate today = LocalDate.now();
+        return eggRepository.findByUsedFalseAndActiveTrueAndValidatedByVetFalse()
+            .stream()
+            .filter(egg -> ChronoUnit.DAYS.between(egg.getDateLaid(), today) <= 10)
+            .toList();
+    }
+
+    public Egg validateEggById(Long id) {
+        Egg egg = eggRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Egg not found"));
+
+        egg.setValidatedByVet(true);
+        egg.setValidationDate(LocalDate.now());
+        return eggRepository.save(egg);
+    }
+
+
+    
+    public Egg validateEgg(Long eggId) {
+        Egg egg = eggRepository.findById(eggId)
+            .orElseThrow(() -> new IllegalArgumentException("Œuf non trouvé"));
+
+        if (egg.getDateLaid().plusDays(10).isBefore(LocalDate.now())) {
+            throw new IllegalStateException("L'œuf a plus de 10 jours, il n'est plus valide.");
+        }
+
+        egg.setValidatedByVet(true);
+        egg.setValidationDate(LocalDate.now());
+        return eggRepository.save(egg);
+    }
+
 
     
     public boolean hasAvailableEgg() {

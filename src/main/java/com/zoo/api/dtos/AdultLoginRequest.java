@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginRequest {
+public class AdultLoginRequest {
 
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "Email invalide")

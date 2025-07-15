@@ -2,10 +2,12 @@ package com.zoo.api.services;
 
 import com.zoo.api.dtos.*;
 import com.zoo.api.entities.Adult;
+import com.zoo.api.enums.Role;
 import com.zoo.api.repositories.AdultRepository;
 import com.zoo.api.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AdultAuthenticationService {
 
     private final AuthenticationManager authenticationManager;
     private final AdultRepository adultRepository;
@@ -21,22 +23,17 @@ public class AuthenticationService {
     private final JwtUtil jwtUtil;
 
     /**
-     * Inscription d’un adulte (professeur ou parent).
-     * Seul le champ 'type' doit être renseigné, jamais 'role'.
-     * Vérifie l’unicité de l’email.
+     * Enregistrement d'un adulte et génération du token JWT.
      */
-    public AuthenticationResponse register(RegisterRequest request) {
-        // Validation : seul 'type' doit être précisé
+    public AuthenticationResponse adultRegisterRequest(AdultRegisterRequest request) {
         if (request.getType() == null) {
-            throw new IllegalArgumentException("Le type doit être précisé (parent ou professeur).");
+            throw new IllegalArgumentException("Le type doit être précisé (parent, professeur ou auxiliaire).");
         }
 
-        // Vérifie que l'email n’est pas déjà utilisé
         if (adultRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Cet email est déjà utilisé.");
         }
 
-        // Création de l’adulte
         Adult adult = new Adult();
         adult.setFirstName(request.getFirstName());
         adult.setLastName(request.getLastName());
@@ -47,37 +44,38 @@ public class AuthenticationService {
 
         adultRepository.save(adult);
 
-        // Génère un token JWT après enregistrement
         String token = jwtUtil.generateToken(adult);
         return new AuthenticationResponse(token);
     }
 
     /**
-     * Authentification d’un adulte via email + mot de passe.
-     * Retourne un token JWT en cas de succès.
+     * Authentification d'un adulte avec gestion d’erreur.
      */
-    public AuthenticationResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword()
-            )
-        );
+    public AuthenticationResponse adultLoginRequest(AdultLoginRequest request) {
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword()
+                )
+            );
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Email ou mot de passe incorrect");
+        }
 
-        Adult user = adultRepository.findByEmail(request.getEmail())
+        Adult adult = adultRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
 
-        String token = jwtUtil.generateToken(user);
+        String token = jwtUtil.generateToken(adult);
         return new AuthenticationResponse(token);
     }
 
     /**
-     * Renvoie les infos utilisateur après inscription (sans token).
-     * Peut être utilisé dans un autre contrôleur si besoin.
+     * Variante de l'enregistrement qui retourne un DTO sans token.
      */
-    public AdultDTO registerAndReturnDTO(RegisterRequest request) {
+    public AdultDTO registerAndReturnDTO(AdultRegisterRequest request) {
         if (request.getType() == null) {
-            throw new IllegalArgumentException("Le type doit être précisé (parent ou professeur).");
+            throw new IllegalArgumentException("Le type doit être précisé.");
         }
 
         if (adultRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -100,8 +98,9 @@ public class AuthenticationService {
             saved.getLastName(),
             saved.getEmail(),
             saved.getPhone(),
-            saved.getPassword(),
-            saved.getType()
+            null,
+            saved.getType(),
+            Role.ROLE_ADULTE
         );
     }
 }

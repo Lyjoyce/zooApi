@@ -14,7 +14,7 @@ import com.zoo.api.entities.Child;
 import com.zoo.api.entities.Egg;
 import com.zoo.api.entities.Reservation;
 import com.zoo.api.entities.Workshop;
-import com.zoo.api.entities.WorkshopType;
+import com.zoo.api.enums.WorkshopType;
 import com.zoo.api.mappers.ReservationMapper;
 import com.zoo.api.repositories.AdultRepository;
 import com.zoo.api.repositories.ChildRepository;

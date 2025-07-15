@@ -1,7 +1,7 @@
-package com.zoo.api.entities;
+package com.zoo.api.enums;
 
 public enum WorkshopType {
-    OMELETTE,
+	OMELETTE,
     NOURRIR_AUTRUCHES
-}
 
+}

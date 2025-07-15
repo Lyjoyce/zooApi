@@ -1,20 +1,18 @@
 package com.zoo.api.dtos;
 
-import com.zoo.api.entities.AdultType;
-import com.zoo.api.entities.Role;
+import com.zoo.api.enums.AdultType;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterRequest {
+public class AdultRegisterRequest {
 
     @NotBlank(message = "Le prénom est obligatoire")
     private String firstName;
@@ -31,7 +29,7 @@ public class RegisterRequest {
     private String phone;
 
     @NotBlank(message = "Le mot de passe est obligatoire")
-    @Size(min = 14, message = "Le mot de passe doit contenir au moins 6 caractères")
+    @Size(min = 14, message = "Le mot de passe doit contenir au moins 14 caractères")
     private String password;
     
     @NotNull(message = "Le type doit être précisé (PARENT, PROFESSEUR, AUXILIAIRE)")

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import com.zoo.api.enums.WorkshopType;
+
 @Entity
 @Data
 @NoArgsConstructor

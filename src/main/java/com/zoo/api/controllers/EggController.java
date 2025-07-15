@@ -14,6 +14,18 @@ import java.util.List;
 public class EggController {
 
     private final EggService eggService;
+    
+ // Liste des œufs à valider (non utilisés, actifs, pas encore validés, < 10 jours)
+    @GetMapping("/to-validate")
+    public List<Egg> getEggsToValidate() {
+        return eggService.getEggsToValidate();
+    }
+
+    // Validation d’un œuf par ID
+    @PutMapping("/validate/{id}")
+    public ResponseEntity<Egg> validateEgg(@PathVariable Long id) {
+        return ResponseEntity.ok(eggService.validateEggById(id));
+    }
 
     @GetMapping
     public ResponseEntity<List<Egg>> getAllEggs() {
