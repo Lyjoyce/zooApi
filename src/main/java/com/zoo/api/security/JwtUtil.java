@@ -13,7 +13,6 @@ import com.zoo.api.entities.Account;
 import com.zoo.api.entities.Adult;
 
 import io.jsonwebtoken.*;
-
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
@@ -24,7 +23,7 @@ public class JwtUtil {
     private String jwtSecret;
 
     @Value("${jwt.expiration}")
-    private Long jwtExpiration; // Optionnel : peut remplacer EXPIRATION_TIME
+    private Long jwtExpiration;
 
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24h
 
@@ -35,12 +34,13 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    // ---- Génération du token pour Adult
+    // ---- Génération du token pour Adult avec firstName
     public String generateToken(Adult adult) {
         return Jwts.builder()
                 .setSubject(adult.getEmail())
                 .claim("id", adult.getId())
-                .claim("adultType", adult.getType() != null ? adult.getType().name() : "UNKNOWN")// adultType
+                .claim("firstName", adult.getFirstName()) // 👈 ajouté ici
+                .claim("adultType", adult.getType() != null ? adult.getType().name() : "UNKNOWN")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -66,6 +66,11 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public String extractFirstName(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("firstName", String.class);
     }
 
     public boolean isTokenValid(String token) {

@@ -3,6 +3,7 @@ package com.zoo.api.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -33,22 +34,22 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll()
+            	    .requestMatchers("/api/v1/auth/**", "/api/v1/employee/login").permitAll()
+            	    .requestMatchers(HttpMethod.OPTIONS, "/api/v1/auth/login").permitAll()
+            	    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+            	    .requestMatchers("/api/v1/employees/**").hasAnyRole("EMPLOYEE", "VETERINAIRE")
+            	    //.requestMatchers("/api/v1/adult/**").permitAll()  // supprimé pour respecter la règle
+            	    .requestMatchers("/api/v1/avis/**").permitAll()
+            	    .anyRequest().authenticated()
+            	)
 
-                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/employee/**").hasAnyRole("EMPLOYEE", "VETERINAIRE")
-             // endpoints adultes spécifiques accessibles à tous les adultes connectés (pas de rôle)
-                .requestMatchers("/api/v1/adult/**").authenticated()
-                
-                // ... autres règles
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                    
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+            return http.build();
+        }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

@@ -1,6 +1,8 @@
 package com.zoo.api.controllers;
 
+import com.zoo.api.documents.Avis;
 import com.zoo.api.entities.Employee;
+import com.zoo.api.services.AvisService;
 import com.zoo.api.services.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,16 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final AvisService avisService;
 
+    // GET : Récupérer tous les employés
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployees());
+        List<Employee> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
     }
 
+    // GET : Récupérer un employé par ID
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
         return employeeService.getEmployeeById(id)
@@ -27,33 +33,37 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // POST : Créer un nouvel employé
     @PostMapping
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        return ResponseEntity.ok(employeeService.saveEmployee(employee));
+        Employee createdEmployee = employeeService.saveEmployee(employee);
+        return ResponseEntity.ok(createdEmployee);
     }
 
+    // PUT : Mettre à jour un employé existant
     @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee updatedEmployee) {
-        return employeeService.getEmployeeById(id)
-                .map(emp -> {
-                    emp.setFirstName(updatedEmployee.getFirstName());
-                    emp.setLastName(updatedEmployee.getLastName());
-                    return ResponseEntity.ok(employeeService.saveEmployee(emp));
-                }).orElse(ResponseEntity.notFound().build());
-    }
-
-    // Soft delete : désactivation de l'employé
-    @PutMapping("/{id}/deactivate")
-    public ResponseEntity<Employee> deactivateEmployee(@PathVariable Long id) {
-        return employeeService.getEmployeeById(id)
-                .map(emp -> {
-                    emp.setActive(false);
-                    return ResponseEntity.ok(employeeService.saveEmployee(emp));
-                })
+        return employeeService.updateEmployee(id, updatedEmployee)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // PUT : Désactiver (soft delete) un employé
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Employee> deactivateEmployee(@PathVariable Long id) {
+        return employeeService.deactivateEmployee(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-    // Pour supprimer vraiment, il faut appeler employeeService.deleteEmployee(id);
-    // @DeleteMapping("/{id}") public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {...}
+ // PUT : Valider un avis via son id (route précise demandée)
+    @PutMapping("/{id}/validate")
+    public ResponseEntity<Avis> validerAvisParEmployee(@PathVariable String id) {
+        try {
+            Avis validé = avisService.validerAvis(id);
+            return ResponseEntity.ok(validé);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

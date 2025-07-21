@@ -17,11 +17,7 @@ public class AdultDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private String phone;
-    private String password;
     private AdultType type;
-    private Role role = Role.ROLE_ADULTE;
-
 }
 
 
