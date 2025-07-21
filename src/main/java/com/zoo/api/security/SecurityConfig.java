@@ -38,7 +38,7 @@ public class SecurityConfig {
             	    .requestMatchers(HttpMethod.OPTIONS, "/api/v1/auth/login").permitAll()
             	    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
             	    .requestMatchers("/api/v1/employees/**").hasAnyRole("EMPLOYEE", "VETERINAIRE")
-            	    //.requestMatchers("/api/v1/adult/**").permitAll()  // supprimé pour respecter la règle
+            	    .requestMatchers("/api/v1/reservationTicket").permitAll() // autorise sans authentification
             	    .requestMatchers("/api/v1/avis/**").permitAll()
             	    .anyRequest().authenticated()
             	)
