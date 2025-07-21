@@ -27,6 +27,19 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
+    
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("*")); // autoriser toutes les origines pour test curl
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,10 +48,9 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
             	    .requestMatchers("/api/v1/auth/**", "/api/v1/employee/login").permitAll()
-            	    .requestMatchers(HttpMethod.OPTIONS, "/api/v1/auth/login").permitAll()
             	    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
             	    .requestMatchers("/api/v1/employees/**").hasAnyRole("EMPLOYEE", "VETERINAIRE")
-            	    .requestMatchers("/api/v1/reservationTicket").permitAll() // autorise sans authentification
+            	    // autorise sans authentification
             	    .requestMatchers(HttpMethod.POST, "/api/v1/reservationTicket").permitAll()
             	    .requestMatchers("/api/v1/avis/**").permitAll()
             	    .anyRequest().authenticated()
@@ -46,8 +58,9 @@ public class SecurityConfig {
 
                     
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .authenticationProvider(authenticationProvider());
+             // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
 
             return http.build();
         }
@@ -68,19 +81,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://127.0.0.1:3000")); // ton frontend
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
     }
 
 }
