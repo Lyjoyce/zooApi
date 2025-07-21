@@ -39,6 +39,7 @@ public class SecurityConfig {
             	    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
             	    .requestMatchers("/api/v1/employees/**").hasAnyRole("EMPLOYEE", "VETERINAIRE")
             	    .requestMatchers("/api/v1/reservationTicket").permitAll() // autorise sans authentification
+            	    .requestMatchers(HttpMethod.POST, "/api/v1/reservationTicket").permitAll()
             	    .requestMatchers("/api/v1/avis/**").permitAll()
             	    .anyRequest().authenticated()
             	)
