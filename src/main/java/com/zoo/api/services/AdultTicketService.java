@@ -26,7 +26,7 @@ public class AdultTicketService {
         adult.setFirstName(request.getFirstName());
         adult.setLastName(request.getLastName());
         adult.setEmail(request.getEmail());
-        adult.setType(request.getType());
+        //adult.setType(request.getType());
 
         adult = adultRepository.save(adult);
 
@@ -35,7 +35,7 @@ public class AdultTicketService {
 
         Ticket ticket = new Ticket();
         ticket.setTicketNumber(ticketNumber);
-        ticket.setVisitDate(request.getVisitDate());
+        //ticket.setVisitDate(request.getVisitDate());
         ticket.setAdult(adult);
         ticketRepository.save(ticket);
 

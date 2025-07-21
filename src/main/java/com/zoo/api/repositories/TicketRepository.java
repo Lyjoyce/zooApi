@@ -10,8 +10,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     Optional<Ticket> findByTicketNumberAndFirstNameAndVisitDate(
         String ticketNumber,
-        String firstName,
-        LocalDate visitDate
+        String firstNam,
+       LocalDate visitDate
     );
 }
 
