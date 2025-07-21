@@ -26,4 +26,10 @@ public class ReservationTicketController {
 
         return ResponseEntity.ok("Réservation confirmée – Numéro : " + ticket.getTicketNumber());
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        e.printStackTrace(); // Affiche dans la console
+        return ResponseEntity.badRequest().body("Erreur : " + e.getMessage());
+    }
+
 }
