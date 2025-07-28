@@ -3,7 +3,10 @@ package com.zoo.api.services;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.zoo.api.entities.Account;
@@ -13,7 +16,9 @@ import com.zoo.api.repositories.AccountRepository;
 import com.zoo.api.repositories.EggRepository;
 import com.zoo.api.repositories.EmployeeRepository;
 import com.zoo.api.repositories.WorkshopRepository;
-
+import com.zoo.api.security.JwtUtil;
+import com.zoo.api.dtos.AdminLoginRequest;
+import com.zoo.api.dtos.AdminLoginResponse;
 import com.zoo.api.dtos.EggsPerDayDTO;
 
 @Service
@@ -23,8 +28,35 @@ public class AdminService {
     @Autowired private EmployeeRepository employeeRepository;
     @Autowired private EggRepository eggRepository;
     @Autowired private WorkshopRepository workshopRepository;
-    @Autowired
-    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    @Autowired private AuthenticationManager authenticationManager;
+    @Autowired private JwtUtil jwtUtil;
+     
+
+    public AdminLoginResponse loginAdmin(AdminLoginRequest request) {
+        Account account = accountRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new RuntimeException("Compte non trouvé"));
+
+        if (account.getRole() != Role.ROLE_ADMIN) {
+            throw new RuntimeException("Non autorisé : rôle administrateur requis.");
+        }
+
+        // Authentifie via Spring Security
+        Authentication auth = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        String token = jwtUtil.generateToken(account); // ✅ méthode correcte
+
+        return new AdminLoginResponse(
+            account.getId(),
+            account.getEmail(),
+            account.getFirstName(),
+            account.getLastName(),
+            token
+        );
+    }
+
 
     public Employee createEmployee(String firstName, String lastName, String email, String password) {
         Account account = new Account();

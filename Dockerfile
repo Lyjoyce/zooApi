@@ -7,7 +7,14 @@ RUN mvn clean package -DskipTests
 # Étape 2 : Exécution avec JRE
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/app.jar app.jar
-COPY .env .env
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8081
-ENTRYPOINT ["sh", "-c", "java -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Étape 2 : Exécution avec JRE
+#FROM eclipse-temurin:21-jre
+#WORKDIR /app
+#COPY --from=build /app/target/app.jar app.jar
+#COPY .env .env
+#EXPOSE 8081
+#ENTRYPOINT ["sh", "-c", "java -jar app.jar"]
