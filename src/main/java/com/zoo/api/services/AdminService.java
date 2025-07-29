@@ -46,7 +46,7 @@ public class AdminService {
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        String token = jwtUtil.generateToken(account); // ✅ méthode correcte
+        String token = jwtUtil.generateTokenForAccount(account); //  méthode correcte
 
         return new AdminLoginResponse(
             account.getId(),

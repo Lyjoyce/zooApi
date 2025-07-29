@@ -31,8 +31,12 @@ public class Account {
     
     @Enumerated(EnumType.STRING)
     private Role role;
-
+    
+    
+    @Builder.Default
     private boolean active = true;
+
+    @Builder.Default
     private boolean enabled = true; // pour suspendre un compte
 
 

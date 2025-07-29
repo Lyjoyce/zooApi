@@ -25,7 +25,8 @@ public class Ticket {
     private String email;
 
     private LocalDate visitDate;
-
+    
+    @Builder.Default
     private boolean confirmed = false;
     
     @ManyToOne
