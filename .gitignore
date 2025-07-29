@@ -1,37 +1,37 @@
-HELP.md
+# === RÉPERTOIRES DE BUILD À IGNORER ===
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+nbbuild/
+dist/
+nbdist/
 
-### VS Code ###
+# === WRAPPER MAVEN À IGNORER ===
+.mvn/
+mvnw
+mvnw.cmd
+
+# === CONFIGURATION IDE ===
+*.iml
+.idea/
+*.ipr
+*.iws
 .vscode/
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.apt_generated
+.sts4-cache/
 
-# === FICHIERS SENSIBLES ===
+# === FICHIERS SENSIBLES / NON NÉCESSAIRES ===
 .env
-.vscode/launch.json
+*.log
+*.md
+*.bak
+.DS_Store
+Thumbs.db
+
+# === SPÉCIFIQUE NETBEANS ===
+nbproject/private/
+.nb-gradle/

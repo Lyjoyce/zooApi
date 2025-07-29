@@ -1,5 +1,6 @@
 package com.zoo.api.security;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,30 +26,22 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24h
-
     private Key key;
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // ---- Génération du token pour Adult avec firstName
-    public String generateToken(Adult adult) {
-        return Jwts.builder()
-                .setSubject(adult.getEmail())
-                .claim("id", adult.getId())
-                .claim("firstName", adult.getFirstName()) // 👈 ajouté ici
-                .claim("adultType", adult.getType() != null ? adult.getType().name() : "UNKNOWN")
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+    public String generateTokenForAdult(Adult adult) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", adult.getId());
+        claims.put("firstName", adult.getFirstName());
+        claims.put("adultType", adult.getType() != null ? adult.getType().name() : "UNKNOWN");
+        return createToken(claims, adult.getEmail());
     }
 
-    // ---- Génération du token pour Account
-    public String generateToken(Account account) {
+    public String generateTokenForAccount(Account account) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", account.getRole().name());
         return createToken(claims, account.getEmail());
@@ -59,7 +52,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -73,15 +66,6 @@ public class JwtUtil {
         return claims.get("firstName", String.class);
     }
 
-    public boolean isTokenValid(String token) {
-        try {
-            parseClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
             Claims claims = parseClaims(token);
@@ -89,6 +73,7 @@ public class JwtUtil {
             return (username.equals(userDetails.getUsername()) &&
                     !claims.getExpiration().before(new Date()));
         } catch (JwtException | IllegalArgumentException e) {
+            // Logger la cause ici en dev/debug
             return false;
         }
     }
