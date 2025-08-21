@@ -3,19 +3,14 @@ package com.zoo.api.services;
 import com.zoo.api.documents.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import com.mailjet.client.MailjetClient;
-import com.mailjet.client.MailjetRequest;
-import com.mailjet.client.MailjetResponse;
-import com.mailjet.client.resource.Emailv31;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.time.LocalDate;
 
+@ConditionalOnProperty(name = "mail.enabled", havingValue = "true", matchIfMissing = true)
 @Service
 public class EmailService {
 
@@ -25,12 +20,12 @@ public class EmailService {
     @Value("${mail.enabled:true}")
     private boolean mailEnabled;
 
-    @Value("${mailjet.api.key}")
-    private String apiKey;
+    @Value("${spring.mail.username:no-reply@zoo-autruche.com}") // l’adresse expéditeur
+    private String fromAddress;
 
-    @Value("${mailjet.api.secret}")
-    private String apiSecret;
-
+    /**
+     * Envoi d’un email de confirmation de réservation.
+     */
     public void sendConfirmationEmail(String to, String firstName, String ticketNumber, LocalDate date) {
         if (!mailEnabled) {
             System.out.println("Mail sending is disabled. Skipping confirmation email.");
@@ -54,6 +49,7 @@ public class EmailService {
         """, firstName, ticketNumber, date);
 
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromAddress);
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
@@ -61,40 +57,32 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    /**
+     * Envoi d’un email de contact (formulaire site web).
+     */
     public void sendContactEmail(Contact contact) {
         if (!mailEnabled) {
             System.out.println("Mail sending is disabled. Skipping contact email.");
             return;
         }
 
-        try {
-            MailjetClient client = new MailjetClient(apiKey, apiSecret);
+        String subject = "[Contact] " + contact.getSubject();
+        String body = String.format("""
+            Message reçu depuis le formulaire de contact :
 
-            MailjetRequest request = new MailjetRequest(Emailv31.resource)
-                .property(Emailv31.MESSAGES, new JSONArray()
-                    .put(new JSONObject()
-                        .put(Emailv31.Message.FROM, new JSONObject()
-                            .put("Email", "autruchecompagnie@gmail.com")
-                            .put("Name", "Autruche & Compagnie"))
-                        .put(Emailv31.Message.TO, new JSONArray()
-                            .put(new JSONObject()
-                                .put("Email", "autruchecompagnie@gmail.com")
-                                .put("Name", "Autruche & Compagnie")))
-                        .put(Emailv31.Message.SUBJECT, contact.getSubject())
-                        .put(Emailv31.Message.TEXTPART, contact.getMessage())
-                        .put(Emailv31.Message.HTMLPART, "<p><strong>Message de :</strong> " + contact.getName()
-                            + " (" + contact.getEmail() + ")<br><br>" + contact.getMessage() + "</p>")
-                    )
-                );
+            Nom : %s
+            Email : %s
 
-            MailjetResponse response = client.post(request);
-            System.out.println("Status: " + response.getStatus());
-            System.out.println("Data: " + response.getData());
+            Message :
+            %s
+        """, contact.getName(), contact.getEmail(), contact.getMessage());
 
-        } catch (Exception e) {
-            System.err.println("Erreur lors de l’envoi du mail via Mailjet :");
-            e.printStackTrace();
-        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromAddress);
+        message.setTo("autruchecompagnie@gmail.com"); // boîte de réception
+        message.setSubject(subject);
+        message.setText(body);
 
+        mailSender.send(message);
     }
 }

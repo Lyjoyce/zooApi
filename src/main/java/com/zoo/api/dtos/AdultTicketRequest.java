@@ -1,22 +1,17 @@
 package com.zoo.api.dtos;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Data;
 
 @Data
-public class AdultReservationRequest {
+public class AdultTicketRequest {
     private String firstName;
     private String lastName;
     private String email;
-    
-    //private AdultType type;
     private LocalDate visitDate;
-    //private String dayOfWeek;
-    //private String ateliers;
-    
-    public AdultReservationRequest() {}
-
+    private String nbEnfants;
+    private String nbAdultes;
+    private List<String> ateliers; // directement une liste
 }
-
-

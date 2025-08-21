@@ -1,6 +1,6 @@
 package com.zoo.api.services;
 
-import com.zoo.api.dtos.AdultReservationRequest;
+import com.zoo.api.dtos.AdultTicketRequest;
 import com.zoo.api.entities.Adult;
 import com.zoo.api.entities.Ticket;
 import com.zoo.api.repositories.AdultRepository;
@@ -21,7 +21,7 @@ public class AdultTicketService {
 
     private final AtomicInteger counter = new AtomicInteger(1); // pour l'incrément local (peut être stocké en BDD à terme)
 
-    public String makeReservation(AdultReservationRequest request) {
+    public String makeReservation(AdultTicketRequest request) {
         Adult adult = new Adult();
         adult.setFirstName(request.getFirstName());
         adult.setLastName(request.getLastName());
@@ -36,7 +36,6 @@ public class AdultTicketService {
         Ticket ticket = new Ticket();
         ticket.setTicketNumber(ticketNumber);
         //ticket.setVisitDate(request.getVisitDate());
-        ticket.setAdult(adult);
         ticketRepository.save(ticket);
 
         // Envoi email

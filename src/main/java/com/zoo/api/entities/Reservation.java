@@ -22,9 +22,13 @@ public class Reservation {
     @ManyToOne
     private Adult createdBy;
 
-    @OneToMany
-    private List<Child> participants;
+ // Nombre d'enfants (au lieu d'une liste de Child)
+    private int nbChildren;
+
+    // Nombre d’adultes accompagnateurs (y compris celui qui réserve)
+    private int nbAdults;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private List<Workshop> workshops;
+
 }

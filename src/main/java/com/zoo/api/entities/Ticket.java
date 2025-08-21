@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.zoo.api.documents.Avis;
 
@@ -25,11 +26,13 @@ public class Ticket {
     private String email;
 
     private LocalDate visitDate;
-    
+    private int nbEnfants;
+    private int nbAdultes;
+
+    @ElementCollection
+    private List<String> ateliers;
+
     @Builder.Default
     private boolean confirmed = false;
-    
-    @ManyToOne
-    private Adult adult;
 }
 

@@ -1,74 +1,60 @@
 package com.zoo.api.services;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.zoo.api.entities.Ticket;
 import com.zoo.api.repositories.TicketRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final EmailService emailService;
 
-    /**
-     * Crée une réservation / ticket, génère un numéro unique,
-     * sauvegarde en base, puis envoie un email de confirmation.
-     */
-    @Transactional
-    public Ticket createTicket(String firstName, String lastName, String email, LocalDate visitDate) {
-        // Générer un numéro de ticket unique (ex : UUID ou custom)
-        String ticketNumber = "Reservation-" + LocalDate.now().toString().replace("-", "") + "-" + UUID.randomUUID().toString().substring(0, 8);
+    private static final List<DayOfWeek> JOURS_AUTORISES = List.of(
+        DayOfWeek.MONDAY,
+        DayOfWeek.TUESDAY,
+        DayOfWeek.THURSDAY,
+        DayOfWeek.FRIDAY
+    );
 
-        Ticket ticket = new Ticket();
-        ticket.setFirstName(firstName);
-        ticket.setLastName(lastName);
-        ticket.setEmail(email);
-        ticket.setVisitDate(visitDate);
-        ticket.setTicketNumber(ticketNumber);
-        ticket.setConfirmed(false);
+    public Ticket createTicket(String firstName, String lastName, String email,
+                               LocalDate visitDate, int nbAdultes, int nbEnfants,
+                               List<String> ateliers) {
 
-        // Sauvegarde en base
-        Ticket savedTicket = ticketRepository.save(ticket);
+        if (nbAdultes <= 0 || nbEnfants / nbAdultes > 6) {
+            throw new IllegalArgumentException("1 adulte pour 6 enfants maximum.");
+        }
 
-        // Envoi email confirmation
-        emailService.sendConfirmationEmail(email, firstName, ticketNumber, visitDate);
+        if (!JOURS_AUTORISES.contains(visitDate.getDayOfWeek())) {
+            throw new IllegalArgumentException("Les ateliers sont uniquement disponibles lundi, mardi, jeudi et vendredi.");
+        }
 
-        return savedTicket;
+        if (ateliers == null || ateliers.isEmpty()) {
+            throw new IllegalArgumentException("Veuillez sélectionner au moins un atelier.");
+        }
+
+        Ticket ticket = Ticket.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .visitDate(visitDate)
+                .nbAdultes(nbAdultes)
+                .nbEnfants(nbEnfants)
+                .ateliers(ateliers) // ✅ Stockage direct de la liste
+                .confirmed(false)
+                .build();
+
+        return ticketRepository.save(ticket);
     }
 
-    /**
-     * Recherche un ticket via numéro, prénom et date.
-     */
-    public Optional<Ticket> findTicket(String ticketNumber, String firstName, LocalDate visitDate) {
-        return ticketRepository.findByTicketNumberAndFirstNameAndVisitDate(ticketNumber, firstName, visitDate);
-    }
-
-    /**
-     * Confirme un ticket en mettant le flag confirmed à true.
-     * Retourne le ticket mis à jour ou Optional.empty() si non trouvé.
-     */
-    @Transactional
-    public Optional<Ticket> confirmTicket(String ticketNumber, String firstName, LocalDate visitDate) {
-        Optional<Ticket> ticketOpt = findTicket(ticketNumber, firstName, visitDate);
-        ticketOpt.ifPresent(ticket -> {
-            ticket.setConfirmed(true);
-            ticketRepository.save(ticket);
-        });
-        return ticketOpt;
-    }
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
     }
-
 }
-

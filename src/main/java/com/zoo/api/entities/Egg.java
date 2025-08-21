@@ -27,7 +27,6 @@ public class Egg {
     private LocalDate validationDate;
 
     @ManyToOne
-    private Ostrich female; // femelle pondeuse
-
-	
+    @JoinColumn(name = "ostrich_id")
+    private Ostrich ostrich;
 }

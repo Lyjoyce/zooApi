@@ -17,6 +17,9 @@ public class Workshop {
     private Long id;
 
     private LocalDate date;
+    
+    private String startTime; // exemple: "10h00"
+    private String endTime;   // exemple: "11h30"
 
     @Enumerated(EnumType.STRING)
     private WorkshopType type; // OMELETTE, NOURRIR_AUTRUCHES
@@ -24,9 +27,10 @@ public class Workshop {
     @ManyToOne
     private Employee employee;
 
-    @ManyToOne
-    private Reservation reservation;
-
     @OneToOne
     private Egg usedEgg; // uniquement si type == OMELETTE
+    
+    @ManyToOne
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 }

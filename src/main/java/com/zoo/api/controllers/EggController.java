@@ -46,13 +46,11 @@ public class EggController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Egg> updateEgg(@PathVariable Long id, @RequestBody Egg updatedEgg) {
-        return eggService.getEggById(id)
-                .map(egg -> {
-                    egg.setDateLaid(updatedEgg.getDateLaid());
-                    egg.setUsed(updatedEgg.isUsed());
-                    egg.setFemale(updatedEgg.getFemale());
-                    return ResponseEntity.ok(eggService.saveEgg(egg));
-                }).orElse(ResponseEntity.notFound().build());
+        try {
+            return ResponseEntity.ok(eggService.updateEgg(id, updatedEgg));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}/deactivate")

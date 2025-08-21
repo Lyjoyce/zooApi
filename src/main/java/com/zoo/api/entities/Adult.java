@@ -26,7 +26,4 @@ public class Adult {
     @Enumerated(EnumType.STRING)
     private AdultType type; // pour savoir si c'est un professeur, parent, ou auxiliaire.
     
-    @OneToMany(mappedBy = "responsibleAdult", cascade = CascadeType.ALL)
-    private List<Child> children;
-    
 }

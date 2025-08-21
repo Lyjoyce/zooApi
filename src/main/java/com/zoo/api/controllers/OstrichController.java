@@ -51,11 +51,13 @@ public class OstrichController {
                     return ResponseEntity.ok(ostrichService.saveOstrich(ostrich));
                 }).orElse(ResponseEntity.notFound().build());
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOstrich(@PathVariable Long id) {
-        ostrichService.deleteOstrich(id);
-        return ResponseEntity.noContent().build();
+    
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Ostrich> deactivateOstrich(@PathVariable Long id) {
+        return ostrichService.deactivateOstrich(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
 }
 

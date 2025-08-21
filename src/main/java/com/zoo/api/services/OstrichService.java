@@ -17,15 +17,29 @@ public class OstrichService {
     public Ostrich saveOstrich(Ostrich ostrich) {
         return ostrichRepository.save(ostrich);
     }
+    
+    public boolean existsByName(String name) {
+        return ostrichRepository.existsByName(name);
+    }
 
     public Optional<Ostrich> getOstrichById(Long id) {
         return ostrichRepository.findById(id);
+    }
+
+    /**
+     * Retourne uniquement une autruche active (active = true)
+     */
+    public Optional<Ostrich> getActiveOstrichById(Long id) {
+        return ostrichRepository.findByIdAndActiveTrue(id);
     }
 
     public List<Ostrich> getAllActiveOstriches() {
         return ostrichRepository.findByActiveTrue();
     }
 
+    /**
+     * Désactivation logique d’une autruche
+     */
     public Optional<Ostrich> deactivateOstrich(Long id) {
         return ostrichRepository.findById(id).map(ostrich -> {
             ostrich.setActive(false);
@@ -33,7 +47,21 @@ public class OstrichService {
         });
     }
 
-    public void deleteOstrich(Long id) {
-        ostrichRepository.deleteById(id);
+    /**
+     * Mise à jour d’une autruche (évite les valeurs null)
+     */
+    public Optional<Ostrich> updateOstrich(Long id, Ostrich updated) {
+        return ostrichRepository.findById(id).map(ostrich -> {
+            if (updated.getName() != null) {
+                ostrich.setName(updated.getName());
+            }
+            if (updated.getAge() != null) {
+                ostrich.setAge(updated.getAge());
+            }
+            if (updated.getGender() != null) {
+                ostrich.setGender(updated.getGender());
+            }
+            return ostrichRepository.save(ostrich);
+        });
     }
 }

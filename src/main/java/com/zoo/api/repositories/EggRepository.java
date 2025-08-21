@@ -1,6 +1,7 @@
 package com.zoo.api.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.zoo.api.dtos.EggsPerDayDTO;
 import com.zoo.api.entities.Egg;
+import com.zoo.api.entities.Ostrich;
 
 @Repository
 public interface EggRepository extends JpaRepository<Egg, Long> {
@@ -33,5 +35,4 @@ public interface EggRepository extends JpaRepository<Egg, Long> {
            "GROUP BY e.dateLaid " +
            "ORDER BY e.dateLaid")
     List<EggsPerDayDTO> countEggsPerDayDTO();
-
 }
