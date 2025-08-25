@@ -1,9 +1,14 @@
 services:
   zooapi:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: zoo-api
     ports:
       - "8080:8080"
     env_file:
       - .env
     restart: unless-stopped
+    environment:
+      # Active le profil Spring (ne pas toucher à application-dev.properties local)
+      SPRING_PROFILES_ACTIVE: dev
