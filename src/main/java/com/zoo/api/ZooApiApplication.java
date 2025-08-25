@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 
 import com.zoo.api.ZooApiApplication;
 
-@SpringBootApplication(exclude = {MailSenderAutoConfiguration.class})
+@SpringBootApplication
 public class ZooApiApplication {
 
 	public static void main(String[] args) {

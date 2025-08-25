@@ -4,5 +4,4 @@ public enum AdultType {
 	PROFESSEUR,
     PARENT,
     AUXILIAIRE
-
 }

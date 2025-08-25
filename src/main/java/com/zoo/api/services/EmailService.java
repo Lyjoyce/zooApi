@@ -2,87 +2,57 @@ package com.zoo.api.services;
 
 import com.zoo.api.documents.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
-@ConditionalOnProperty(name = "mail.enabled", havingValue = "true", matchIfMissing = true)
 @Service
 public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${mail.enabled:true}")
-    private boolean mailEnabled;
-
-    @Value("${spring.mail.username:no-reply@zoo-autruche.com}") // l’adresse expéditeur
-    private String fromAddress;
-
     /**
-     * Envoi d’un email de confirmation de réservation.
+     * Test simple d'envoi de mail
      */
-    public void sendConfirmationEmail(String to, String firstName, String ticketNumber, LocalDate date) {
-        if (!mailEnabled) {
-            System.out.println("Mail sending is disabled. Skipping confirmation email.");
-            return;
-        }
-
-        String subject = "Votre réservation au Zoo Autruche & Compagnie";
-        String body = String.format("""
-            Bonjour %s,
-
-            Merci pour votre réservation. Voici votre numéro de ticket :
-
-            Numéro : %s
-            Date de visite : %s
-
-            Veuillez conserver ce numéro pour laisser un avis après votre visite.
-
-            À bientôt !
-
-            Zoo Autruche & Compagnie
-        """, firstName, ticketNumber, date);
-
+    public void sendTestEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromAddress);
+        message.setFrom("kakti@alwaysdata.net"); // expéditeur Alwaysdata
         message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-
+        message.setSubject("✅ Test email Zoo Autruche & Compagnie");
+        message.setText("Bravo ! Ton envoi d'email via Alwaysdata SMTP fonctionne 🎉");
         mailSender.send(message);
     }
 
     /**
-     * Envoi d’un email de contact (formulaire site web).
+     * Envoi d'un email de confirmation (utilisé dans MailTestController)
+     */
+    public void sendConfirmationEmail(String to, String username, String code, LocalDate date) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("kakti@alwaysdata.net");
+        message.setTo(to);
+        message.setSubject("Confirmation d’inscription - Zoo Autruche & Compagnie");
+        message.setText("Bonjour " + username + ",\n\n" +
+                "Voici ton code de confirmation : " + code +
+                "\nDate : " + date +
+                "\n\nMerci de ta confiance 🦩 !");
+        mailSender.send(message);
+    }
+
+    /**
+     * Envoi d'un email quand un utilisateur remplit le formulaire de contact
+     * (utilisé dans ContactController)
      */
     public void sendContactEmail(Contact contact) {
-        if (!mailEnabled) {
-            System.out.println("Mail sending is disabled. Skipping contact email.");
-            return;
-        }
-
-        String subject = "[Contact] " + contact.getSubject();
-        String body = String.format("""
-            Message reçu depuis le formulaire de contact :
-
-            Nom : %s
-            Email : %s
-
-            Message :
-            %s
-        """, contact.getName(), contact.getEmail(), contact.getMessage());
-
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromAddress);
-        message.setTo("autruchecompagnie@gmail.com"); // boîte de réception
-        message.setSubject(subject);
-        message.setText(body);
-
+        message.setFrom("kakti@alwaysdata.net");
+        message.setTo("kakti@alwaysdata.net"); // boîte de réception commune
+        message.setSubject("📩 Nouveau message de contact");
+        message.setText("Nom : " + contact.getName() + "\n" +
+                        "Email : " + contact.getEmail() + "\n" +
+                        "Message : " + contact.getMessage());
         mailSender.send(message);
     }
 }
