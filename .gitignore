@@ -27,11 +27,19 @@ mvnw.cmd
 # === FICHIERS SENSIBLES / NON NÉCESSAIRES ===
 .env
 *.log
-*.md
 *.bak
 .DS_Store
 Thumbs.db
 
+# === DOCUMENTATION / TEMPORAIRE ===
+*.md
+
 # === SPÉCIFIQUE NETBEANS ===
 nbproject/private/
 .nb-gradle/
+
+# === SPRING BOOT CONFIG ===
+# on versionne SEULEMENT application.properties (prod, avec ${VAR})
+# mais on ignore les configs locales pour ne pas exposer de secrets
+application-dev.properties
+application-local.properties
