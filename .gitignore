@@ -43,3 +43,5 @@ nbproject/private/
 # mais on ignore les configs locales pour ne pas exposer de secrets
 application-dev.properties
 application-local.properties
+src/main/resources/application-dev.properties
+
