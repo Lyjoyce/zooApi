@@ -1,0 +1,39 @@
+# ===============================================
+#          ZooApi - Application Dev
+# ===============================================
+
+# ----- Serveur -----
+server.port=8080
+spring.application.name=zoo-api-dev
+
+# ----- Base de données MySQL -----
+spring.datasource.url=jdbc:mysql://localhost:3306/zooapi_dev?useSSL=false&serverTimezone=UTC
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# ----- JWT (JSON Web Token) -----
+jwt.secret=YOUR_SECRET_KEY_HERE
+jwt.expiration=86400000 # 1 jour en ms
+
+# ----- Mail Sender (SMTP) -----
+spring.mail.host=smtp.example.com
+spring.mail.port=587
+spring.mail.username=YOUR_EMAIL@example.com
+spring.mail.password=YOUR_EMAIL_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+# ----- Logging -----
+logging.level.org.springframework=INFO
+logging.level.com.yourpackage=DEBUG
+
+# ----- Autres paramètres spécifiques -----
+# Nombre maximum d’enfants par adulte pour les ateliers
+app.maxChildrenPerAdult=6
+
+# Email de test pour notifications internes
+app.test.email=internal-test@example.com
