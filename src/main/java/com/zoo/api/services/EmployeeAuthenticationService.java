@@ -31,8 +31,11 @@ public class EmployeeAuthenticationService {
         System.out.println("MATCHES: " + passwordEncoder.matches(rawPassword, storedHash));
     }
 
-    // Login
+ // Login
     public EmployeeLoginResponse login(EmployeeLoginRequest request) {
+        // ➡️ Ajout du log pour voir si ça passe
+        System.out.println("Tentative de login employé avec email = " + request.getEmail());
+
         // Récupère l'employé par email
         Account account = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Compte non trouvé"));
