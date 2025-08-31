@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 
 import com.zoo.api.ZooApiApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.zoo.api")
+
 public class ZooApiApplication {
 
 	public static void main(String[] args) {

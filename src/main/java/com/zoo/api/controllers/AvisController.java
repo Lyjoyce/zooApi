@@ -35,12 +35,6 @@ public class AvisController {
     // Ajout d’un avis (ticketNumber + firstName + visitDate requis)
     @PostMapping
     public ResponseEntity<?> envoyerAvis(@RequestBody Avis avis) {
-        ResponseEntity<?> response = avisService.createAvisWithTicketVerification(avis);
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return ResponseEntity.ok("Avis enregistré et en attente de validation.");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getBody());
-        }
+        return avisService.createAvisWithTicketVerification(avis);
     }
 }

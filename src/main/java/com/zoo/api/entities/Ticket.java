@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.zoo.api.documents.Avis;
@@ -29,8 +30,9 @@ public class Ticket {
     private int nbEnfants;
     private int nbAdultes;
 
-    @ElementCollection
-    private List<String> ateliers;
+    @Builder.Default
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TicketWorkshop> workshops = new ArrayList<>();
 
     @Builder.Default
     private boolean confirmed = false;

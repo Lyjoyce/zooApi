@@ -1,5 +1,5 @@
 // DataLoader pour les autruches
-package com.zoo.api.config;
+package com.zoo.api.dataloader;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -56,14 +56,9 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
- // PUT : Valider un avis via son id (route précise demandée)
+ // PUT : Valider un avis via son id (retour unifié {message + avis})
     @PutMapping("/{id}/validate")
-    public ResponseEntity<Avis> validerAvisParEmployee(@PathVariable String id) {
-        try {
-            Avis validé = avisService.validerAvis(id);
-            return ResponseEntity.ok(validé);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<?> validerAvisParEmployee(@PathVariable String id) {
+        return avisService.validerAvis(id);
     }
 }

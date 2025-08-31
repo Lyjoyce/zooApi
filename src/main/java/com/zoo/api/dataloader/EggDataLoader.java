@@ -1,5 +1,5 @@
 // DataLoader pour les œufs
-package com.zoo.api.config;
+package com.zoo.api.dataloader;
 
 import com.zoo.api.entities.Egg;
 import com.zoo.api.entities.Ostrich;

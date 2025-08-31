@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.zoo.api.entities.Ticket;
+import com.zoo.api.entities.TicketWorkshop;
 import com.zoo.api.repositories.TicketRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -47,9 +48,17 @@ public class TicketService {
                 .visitDate(visitDate)
                 .nbAdultes(nbAdultes)
                 .nbEnfants(nbEnfants)
-                .ateliers(ateliers) // ✅ Stockage direct de la liste
                 .confirmed(false)
                 .build();
+        
+        // Ajout des workshops liés
+        ateliers.forEach(atelier -> {
+            TicketWorkshop workshop = TicketWorkshop.builder()
+                    .atelier(atelier)
+                    .ticket(ticket)
+                    .build();
+            ticket.getWorkshops().add(workshop);
+        });
 
         return ticketRepository.save(ticket);
     }
