@@ -47,6 +47,11 @@ public class JwtUtil {
         return createToken(claims, account.getEmail());
     }
 
+    // méthode publique simple
+    public String generateToken(String email) {
+        return createToken(new HashMap<>(), email); // sans claims supplémentaires
+    }
+
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -73,7 +78,6 @@ public class JwtUtil {
             return (username.equals(userDetails.getUsername()) &&
                     !claims.getExpiration().before(new Date()));
         } catch (JwtException | IllegalArgumentException e) {
-            // Logger la cause ici en dev/debug
             return false;
         }
     }

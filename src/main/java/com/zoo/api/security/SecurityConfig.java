@@ -1,5 +1,6 @@
 package com.zoo.api.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,13 +9,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import lombok.RequiredArgsConstructor;
-
+import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -22,13 +24,14 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity // active @PreAuthorize
 public class SecurityConfig {
 
-
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // REST API, pas besoin de CSRF
+        http
+            .csrf(csrf -> csrf.disable()) // REST API, pas besoin de CSRF
+            .cors(cors -> {}) // active CORS avec la config corsConfigurationSource()
             .authorizeHttpRequests(auth -> auth
                 // -------------------
                 // PUBLIC
@@ -36,7 +39,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/admin/login").permitAll()
                 .requestMatchers("/api/v1/employees/login").permitAll()
                 .requestMatchers("/api/v1/avis").permitAll()
-                
+                .requestMatchers("/test-mail").permitAll()
+
                 // -------------------
                 // RESTRICTIONS PAR RÔLES
                 // -------------------
@@ -45,7 +49,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
                 // tout le reste nécessite un utilisateur connecté
-                .requestMatchers("/test-mail").permitAll()
                 .anyRequest().authenticated()
             )
             // Ajout du filtre JWT avant UsernamePasswordAuthenticationFilter
@@ -55,13 +58,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("https://lyjoyce.github.io")); // autoriser ton front
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // nécessaire pour envoyer JWT dans les headers
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder(); // encodage sécurisé des mots de passe
     }
 
 }
