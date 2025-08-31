@@ -11,9 +11,6 @@ import com.zoo.api.ZooApiApplication;
 public class ZooApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(ZooApiApplication.class);
-
-		app.setAdditionalProfiles("dev");
-		app.run(args);
+		 SpringApplication.run(ZooApiApplication.class, args);
 	}
 }
