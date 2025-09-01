@@ -33,8 +33,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 true,               // credentialsNonExpired
                 true,               // accountNonLocked
                 Collections.singletonList(
-                    new SimpleGrantedAuthority(account.getRole().name())
-                )
+                	    new SimpleGrantedAuthority("ROLE_" + account.getRole().name())// ajout de ROLE 
+                	)
             ))
             .orElseThrow(() -> {
                 logger.warn("Tentative de connexion échouée : utilisateur non trouvé avec email '{}'", email);
