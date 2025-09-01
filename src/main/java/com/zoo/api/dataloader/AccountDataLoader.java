@@ -1,21 +1,6 @@
-package com.zoo.api.dataloader;
-
-import com.zoo.api.entities.Account;
-import com.zoo.api.enums.Role;
-import com.zoo.api.repositories.AccountRepository;
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
-@Order(1) // doit s'exécuter avant Ostrich et Egg
+@Order(1) // s'exécute après l'admin
 public class AccountDataLoader implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountDataLoader.class);
@@ -26,8 +11,12 @@ public class AccountDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
-            if (!accountRepository.findAll().isEmpty()) {
-                logger.info("Les comptes existent déjà en base, aucun ajout automatique.");
+            // Vérifie l'existence des employés
+            long existingEmployees = accountRepository.countByRoleIn(
+                    List.of(Role.ROLE_EMPLOYEE, Role.ROLE_VETERINAIRE));
+
+            if (existingEmployees > 0) {
+                logger.info("Les employés et vétérinaires existent déjà en base, aucun ajout automatique.");
                 return;
             }
 
@@ -89,11 +78,10 @@ public class AccountDataLoader implements CommandLineRunner {
             );
 
             accountRepository.saveAll(accounts);
-            logger.info(" {} comptes ajoutés automatiquement à la base.", accounts.size());
+            logger.info("{} comptes ajoutés automatiquement à la base.", accounts.size());
 
         } catch (Exception e) {
-            logger.error(" Erreur lors de l'ajout automatique des comptes :", e);
+            logger.error("Erreur lors de l'ajout automatique des comptes :", e);
         }
     }
 }
-
