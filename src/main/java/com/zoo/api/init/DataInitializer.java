@@ -3,7 +3,6 @@ package com.zoo.api.init;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.zoo.api.entities.Account;
@@ -13,11 +12,11 @@ import com.zoo.api.repositories.AccountRepository;
 @Configuration
 public class DataInitializer {
 
-
     @Bean
     CommandLineRunner initData(AccountRepository accountRepo, PasswordEncoder passwordEncoder) {
         return args -> {
 
+            /*
             // Admin
             if (accountRepo.findByEmail("admin@zoo.com").isEmpty()) {
                 Account admin = Account.builder()
@@ -51,6 +50,8 @@ public class DataInitializer {
             } else {
                 System.out.println("Compte employé déjà existant.");
             }
+            */
+
         };
     }
 }

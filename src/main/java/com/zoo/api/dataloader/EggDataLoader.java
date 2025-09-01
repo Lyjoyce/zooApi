@@ -17,7 +17,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Order(2) // s'assure que ce loader s'exécute après les autruches
+@Order(3) // s'assure que ce loader s'exécute après les autruches
 public class EggDataLoader implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(EggDataLoader.class);
@@ -30,7 +30,7 @@ public class EggDataLoader implements CommandLineRunner {
         try {
             // Vérifier si la table Egg est déjà remplie
             if (!eggService.getAllActiveEggs().isEmpty()) {
-                logger.info("ℹ️ Les œufs existent déjà en base, aucun nouvel ajout automatique.");
+                logger.info(" Les œufs existent déjà en base, aucun nouvel ajout automatique.");
                 return; // on sort pour éviter de dupliquer
             }
 
@@ -60,7 +60,7 @@ public class EggDataLoader implements CommandLineRunner {
                 addedCount++;
             }
 
-            logger.info("✅ {} œufs ajoutés automatiquement à la base.", addedCount);
+            logger.info("{} œufs ajoutés automatiquement à la base.", addedCount);
 
         } catch (Exception e) {
             logger.error("❌ Erreur lors de l'ajout automatique des œufs :", e);

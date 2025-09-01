@@ -18,7 +18,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Order(1) // s'assure que ce loader s'exécute en premier
+@Order(2) // s'assure que ce loader s'exécute en premier
 public class OstrichDataLoader implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(OstrichDataLoader.class);
