@@ -46,7 +46,7 @@ public class SecurityConfig {
                 // RESTRICTIONS PAR RÔLES
                 // -------------------
                 .requestMatchers("/api/v1/veto/**").hasRole("VETERINAIRE")
-                .requestMatchers("/api/v1/employees/**").hasRole("EMPLOYE")
+                .requestMatchers("/api/v1/employees/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
                 // tout le reste nécessite un utilisateur connecté

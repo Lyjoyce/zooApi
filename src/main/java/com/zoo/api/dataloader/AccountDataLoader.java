@@ -65,7 +65,7 @@ public class AccountDataLoader implements CommandLineRunner {
                     .build(),
                 Account.builder()
                     .email("employee4@zoo.com")
-                    .password(passwordEncoder.encode("employee4duZOO"))
+                    .password(passwordEncoder.encode("employee4@duZOO"))
                     .firstName("David")
                     .lastName("Lefevre")
                     .role(Role.ROLE_EMPLOYEE)
