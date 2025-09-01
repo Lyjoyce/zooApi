@@ -3,6 +3,7 @@ package com.zoo.api.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -36,8 +37,8 @@ public class SecurityConfig {
                 // -------------------
                 // PUBLIC
                 // -------------------
-                .requestMatchers("/api/v1/admin/login").permitAll()
-                .requestMatchers("/api/v1/employees/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/admin/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/employees/login").permitAll()
                 .requestMatchers("/api/v1/avis").permitAll()
                 .requestMatchers("/test-mail").permitAll()
 
@@ -45,7 +46,7 @@ public class SecurityConfig {
                 // RESTRICTIONS PAR RÔLES
                 // -------------------
                 .requestMatchers("/api/v1/veto/**").hasRole("VETERINAIRE")
-                .requestMatchers("/api/v1/employees/**").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/employees/**").hasRole("EMPLOYE")
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
                 // tout le reste nécessite un utilisateur connecté
