@@ -42,3 +42,5 @@ nbproject/private/
 # mais on ignore les configs locales pour ne pas exposer de secrets
 application-local.properties
 src/main/resources/application-dev.properties
+src/main/resources/data/accounts.json
+src/main/resources/data/eggs.json
