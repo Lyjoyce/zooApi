@@ -43,10 +43,10 @@ nbproject/private/
 application-local.properties
 src/main/resources/application-dev.properties
 # Ignorer les fichiers .json
-src/main/resources/data/admin_account.json
+#src/main/resources/data/admin_account.json
 src/main/resources/data/accounts.json
 src/main/resources/data/eggs.json
 # Ignorer les fichiers DataLoader
-/src/main/java/com/zoo/api/dataloader/AdminAccountDataLoader.java
-/src/main/java/com/zoo/api/dataloader/*.java
+#src/main/java/com/zoo/api/dataloader/AdminAccountDataLoader.java
+src/main/java/com/zoo/api/dataloader/*.java
 

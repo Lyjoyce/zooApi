@@ -1,0 +1,11 @@
+[
+  {
+    "email": "admin@zoo.com",
+    "password": "adminSecure123",
+    "firstName": "Super",
+    "lastName": "Admin",
+    "role": "ROLE_ADMIN",
+    "active": true,
+    "enabled": true
+  }
+]
