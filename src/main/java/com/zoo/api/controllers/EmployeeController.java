@@ -41,7 +41,7 @@ public class EmployeeController {
     }
 
     // PUT : Mettre à jour un employé existant
-    @PutMapping("/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee updatedEmployee) {
         return employeeService.updateEmployee(id, updatedEmployee)
                 .map(ResponseEntity::ok)
@@ -49,7 +49,7 @@ public class EmployeeController {
     }
 
     // PUT : Désactiver (soft delete) un employé
-    @PutMapping("/{id}/deactivate")
+    @PutMapping("/id/{id}/deactivate")
     public ResponseEntity<Employee> deactivateEmployee(@PathVariable Long id) {
         return employeeService.deactivateEmployee(id)
                 .map(ResponseEntity::ok)
