@@ -1,3 +1,18 @@
+package com.zoo.api.dataloader;
+
+import com.zoo.api.entities.Account;
+import com.zoo.api.enums.Role;
+import com.zoo.api.repositories.AccountRepository;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Order(1) // s'exécute après l'admin
