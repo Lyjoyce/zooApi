@@ -36,7 +36,7 @@ public class AdminAccountDataLoader implements CommandLineRunner {
 
             ObjectMapper mapper = new ObjectMapper();
             TypeReference<List<Account>> typeReference = new TypeReference<>() {};
-            InputStream inputStream = TypeReference.class.getResourceAsStream("/admin_account.json");
+            InputStream inputStream = TypeReference.class.getResourceAsStream("data/adminAccount.json");
 
             if (inputStream == null) {
                 logger.error("❌ admin_account.json introuvable !");
@@ -50,7 +50,7 @@ public class AdminAccountDataLoader implements CommandLineRunner {
                 accountRepository.save(admin);
             }
 
-            logger.info("Admin ajouté en base depuis admin_account.json.");
+            logger.info("Admin ajouté en base depuis adminAccount.json.");
 
         } catch (Exception e) {
             logger.error("Erreur lors du chargement automatique de l’admin :", e);
