@@ -31,28 +31,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // REST API, pas besoin de CSRF
-            .cors(cors -> {}) // active CORS avec la config corsConfigurationSource()
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> {})
             .authorizeHttpRequests(auth -> auth
-                // -------------------
-                // PUBLIC
-                // -------------------
+                // --- PUBLIC ---
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()      // prévol CORS
+                .requestMatchers(HttpMethod.POST, "/api/v1/tickets").permitAll()
+
                 .requestMatchers(HttpMethod.POST, "/api/v1/admin/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/employees/login").permitAll()
                 .requestMatchers("/api/v1/avis").permitAll()
                 .requestMatchers("/test-mail").permitAll()
 
-                // -------------------
-                // RESTRICTIONS PAR RÔLES
-                // -------------------
+                // --- RÔLES ---
                 .requestMatchers("/api/v1/veto/**").hasRole("VETERINAIRE")
                 .requestMatchers("/api/v1/employees/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
-                // tout le reste nécessite un utilisateur connecté
                 .anyRequest().authenticated()
             )
-            // Ajout du filtre JWT avant UsernamePasswordAuthenticationFilter
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -61,14 +58,23 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://lyjoyce.github.io")); // autoriser ton front
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "https://lyjoyce.github.io"  // GitHub Pages
+            // ajoute ici ton domaine front en prod si différent
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // nécessaire pour envoyer JWT dans les headers
+        configuration.setAllowCredentials(true);
+        // Si tu as besoin d'exposer des headers (ex: Authorization, Location)
+        // configuration.setExposedHeaders(List.of("Authorization", "Location"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

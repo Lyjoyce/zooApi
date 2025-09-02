@@ -1,7 +1,7 @@
 [
   {
     "email": "admin@zoo.com",
-    "password": "adminSecure123",
+    "password": "monsuperMDP",
     "firstName": "Super",
     "lastName": "Admin",
     "role": "ROLE_ADMIN",

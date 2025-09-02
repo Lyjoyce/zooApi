@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zoo.api.documents.Avis;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,6 +18,7 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Numéro de ticket généré automatiquement
     private String ticketNumber;
 
     private String firstName;
@@ -36,5 +35,12 @@ public class Ticket {
 
     @Builder.Default
     private boolean confirmed = false;
-}
 
+    // Génère un ticketNumber simple de type "TICKET-xxxx"
+    @PrePersist
+    public void generateTicketNumber() {
+        if (this.ticketNumber == null || this.ticketNumber.isBlank()) {
+            this.ticketNumber = "TICKET-" + System.currentTimeMillis();
+        }
+    }
+}

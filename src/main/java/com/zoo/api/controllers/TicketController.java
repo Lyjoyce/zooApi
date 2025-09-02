@@ -11,7 +11,6 @@ import com.zoo.api.services.TicketService;
 
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/tickets")
 @RequiredArgsConstructor
@@ -27,8 +26,8 @@ public class TicketController {
                 request.getLastName(),
                 request.getEmail(),
                 request.getVisitDate(),
-                Integer.parseInt(request.getNbEnfants()),
-                Integer.parseInt(request.getNbAdultes()),
+                request.getNbEnfants(),   // directement int
+                request.getNbAdultes(), 
                 request.getAteliers() // déjà une List<String>
             );
 

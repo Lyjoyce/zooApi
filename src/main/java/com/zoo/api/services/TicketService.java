@@ -2,6 +2,7 @@ package com.zoo.api.services;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -49,6 +50,7 @@ public class TicketService {
                 .nbAdultes(nbAdultes)
                 .nbEnfants(nbEnfants)
                 .confirmed(false)
+                .workshops(new ArrayList<>()) // ⚡ Sécurise l'init
                 .build();
         
         // Ajout des workshops liés

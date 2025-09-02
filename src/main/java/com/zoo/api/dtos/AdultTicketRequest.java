@@ -11,7 +11,7 @@ public class AdultTicketRequest {
     private String lastName;
     private String email;
     private LocalDate visitDate;
-    private String nbEnfants;
-    private String nbAdultes;
+    private int nbEnfants;
+    private int nbAdultes;
     private List<String> ateliers; // directement une liste
 }
