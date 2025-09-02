@@ -10,6 +10,7 @@ public class AdultTicketRequest {
     private String firstName;
     private String lastName;
     private String email;
+    private String adultType;
     private LocalDate visitDate;
     private int nbEnfants;
     private int nbAdultes;

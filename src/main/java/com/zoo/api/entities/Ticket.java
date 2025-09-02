@@ -24,6 +24,8 @@ public class Ticket {
     private String firstName;
     private String lastName;
     private String email;
+    @Column(nullable = false)
+    private String adultType;
 
     private LocalDate visitDate;
     private int nbEnfants;

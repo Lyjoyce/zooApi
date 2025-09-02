@@ -25,6 +25,7 @@ public class TicketController {
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
+                request.getAdultType(),
                 request.getVisitDate(),
                 request.getNbEnfants(),   // directement int
                 request.getNbAdultes(), 

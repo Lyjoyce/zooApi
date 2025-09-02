@@ -26,7 +26,7 @@ public class TicketService {
         DayOfWeek.FRIDAY
     );
 
-    public Ticket createTicket(String firstName, String lastName, String email,
+    public Ticket createTicket(String firstName, String lastName, String email, String adultType,
                                LocalDate visitDate, int nbAdultes, int nbEnfants,
                                List<String> ateliers) {
 
@@ -46,6 +46,7 @@ public class TicketService {
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)
+                .adultType(adultType)       
                 .visitDate(visitDate)
                 .nbAdultes(nbAdultes)
                 .nbEnfants(nbEnfants)
