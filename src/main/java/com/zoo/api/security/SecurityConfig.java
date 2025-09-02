@@ -22,7 +22,7 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Configuration
-@EnableMethodSecurity // active @PreAuthorize
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -32,12 +32,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // explicit CORS
             .authorizeHttpRequests(auth -> auth
                 // --- PUBLIC ---
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()      // prévol CORS
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // prévol CORS
                 .requestMatchers(HttpMethod.POST, "/api/v1/tickets").permitAll()
-
                 .requestMatchers(HttpMethod.POST, "/api/v1/admin/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/employees/login").permitAll()
                 .requestMatchers("/api/v1/avis").permitAll()
@@ -61,20 +60,18 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
             "http://localhost:3000",
             "http://127.0.0.1:3000",
-            "https://lyjoyce.github.io"  // GitHub Pages
+            "https://lyjoyce.github.io" // GitHub Pages
             // ajoute ici ton domaine front en prod si différent
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        // Si tu as besoin d'exposer des headers (ex: Authorization, Location)
-        // configuration.setExposedHeaders(List.of("Authorization", "Location"));
+        configuration.setExposedHeaders(List.of("Authorization", "Location")); // exposer les headers JWT ou Location si nécessaire
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -85,5 +82,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // encodage sécurisé des mots de passe
     }
-
 }
