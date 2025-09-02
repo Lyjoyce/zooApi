@@ -74,7 +74,7 @@ public class AccountDataLoader implements CommandLineRunner {
                     .build(),
                 Account.builder()
                     .email("vet1@zoo.com")
-                    .password(passwordEncoder.encode("veterinaire1duZOO"))
+                    .password(passwordEncoder.encode("veterin1@duZOO"))
                     .firstName("Emma")
                     .lastName("Girard")
                     .role(Role.ROLE_VETERINAIRE)
@@ -83,7 +83,7 @@ public class AccountDataLoader implements CommandLineRunner {
                     .build(),
                 Account.builder()
                     .email("vet2@zoo.com")
-                    .password(passwordEncoder.encode("veterinaire1duZOO"))
+                    .password(passwordEncoder.encode("veterin2@duZOO"))
                     .firstName("François")
                     .lastName("Moreau")
                     .role(Role.ROLE_VETERINAIRE)
