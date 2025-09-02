@@ -46,4 +46,5 @@ public class TicketController {
     public ResponseEntity<List<Ticket>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
+    
 }

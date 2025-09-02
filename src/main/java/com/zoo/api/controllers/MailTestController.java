@@ -23,7 +23,7 @@ public class MailTestController {
     public String testMail(@RequestParam String to) {
         try {
             emailService.sendConfirmationEmail(to, "TestUser", "TEST-123456", LocalDate.now());
-            return "✅ Email envoyé avec succès à " + to;
+            return " Email envoyé avec succès à " + to;
         } catch (Exception e) {
             e.printStackTrace();
             return "❌ Erreur lors de l'envoi de l'email : " + e.getMessage();

@@ -21,7 +21,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("kakti@alwaysdata.net"); // expéditeur Alwaysdata
         message.setTo(to);
-        message.setSubject("✅ Test email Zoo Autruche & Compagnie");
+        message.setSubject(" Test email Zoo Autruche & Compagnie");
         message.setText("Bravo ! Ton envoi d'email via Alwaysdata SMTP fonctionne 🎉");
         mailSender.send(message);
     }
@@ -55,4 +55,22 @@ public class EmailService {
                         "Message : " + contact.getMessage());
         mailSender.send(message);
     }
+    
+    /**
+     * Envoi d'un email de confirmation de réservation avec numéro de ticket
+     */
+    public void sendTicketConfirmationEmail(String to, String firstName, String lastName, String ticketNumber, LocalDate visitDate) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("kakti@alwaysdata.net");
+        message.setTo(to);
+        message.setSubject("🎟 Confirmation de réservation - Zoo Autruche & Compagnie");
+        message.setText("Bonjour " + firstName + " " + lastName + ",\n\n" +
+                "Merci pour ta réservation au Zoo Autruche & Compagnie 🦩.\n\n" +
+                "👉 Ton numéro de ticket est : " + ticketNumber + "\n" +
+                "📅 Date de visite : " + visitDate + "\n\n" +
+                "Conserve bien ce numéro, il te sera demandé à l’entrée.\n\n" +
+                "À très bientôt au Zoo Autruche & Compagnie !");
+        mailSender.send(message);
+    }
+
 }

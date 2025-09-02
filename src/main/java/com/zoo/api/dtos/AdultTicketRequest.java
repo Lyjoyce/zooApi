@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class AdultTicketRequest {
+	private Long ticketNumber;
     private String firstName;
     private String lastName;
     private String email;
