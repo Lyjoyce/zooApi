@@ -13,6 +13,7 @@ import java.util.Optional;
 public class WorkshopService {
 
     private final WorkshopRepository workshopRepository;
+    private final EggService eggService;
 
     public Workshop saveWorkshop(Workshop workshop) {
         return workshopRepository.save(workshop);
@@ -28,6 +29,15 @@ public class WorkshopService {
 
     public void deleteWorkshop(Long id) {
         workshopRepository.deleteById(id);
+    }
+    
+    public List<String> getAvailableWorkshops() {
+        boolean oeufDispo = eggService.hasAvailableEgg();
+        if (oeufDispo) {
+            return List.of("OMELETTE", "NOURRIR");
+        } else {
+            return List.of("NOURRIR");
+        }
     }
 }
 

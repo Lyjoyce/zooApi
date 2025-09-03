@@ -35,7 +35,7 @@ public class EggService {
         Ostrich ostrich = ostrichRepository.findByName(ostrichName)
                 .orElseThrow(() -> new IllegalArgumentException("Autruche non trouvée : " + ostrichName));
 
-        // ✅ Vérification enum (plus de equalsIgnoreCase sur String)
+        // Vérification enum (plus de equalsIgnoreCase sur String)
         assertFemale(ostrich);
 
         egg.setOstrich(ostrich);
@@ -46,7 +46,7 @@ public class EggService {
         Ostrich ostrich = ostrichRepository.findByName(ostrichName)
                 .orElseThrow(() -> new IllegalArgumentException("Autruche non trouvée : " + ostrichName));
 
-        // ✅ Vérification enum (plus de equalsIgnoreCase sur String)
+        // Vérification enum (plus de equalsIgnoreCase sur String)
         assertFemale(ostrich);
 
         Egg egg = new Egg();

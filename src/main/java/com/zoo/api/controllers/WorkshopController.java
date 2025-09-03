@@ -14,6 +14,11 @@ import java.util.List;
 public class WorkshopController {
 
     private final WorkshopService workshopService;
+    
+    @GetMapping("/disponibles")
+    public ResponseEntity<List<String>> getAteliersDisponibles() {
+        return ResponseEntity.ok(workshopService.getAvailableWorkshops());
+    }
 
     @GetMapping
     public ResponseEntity<List<Workshop>> getAllWorkshops() {
