@@ -1,5 +1,28 @@
 package com.zoo.api.services;
 
+import java.time.LocalDate;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class EmailService {
+
+    // private JavaMailSender mailSender; // supprimé temporairement
+
+    public void sendTestEmail(String to) {
+        // rien pour l'instant
+        System.out.println("Mail bloqué à " + to);
+    }
+
+    public void sendTicketConfirmationEmail(String to, String firstName, String lastName,
+                                            String ticketNumber, LocalDate visitDate) {
+        System.out.println("Mail bloqué pour " + firstName + " " + lastName);
+    }
+}
+
+/**
+
+
 import com.zoo.api.documents.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,9 +37,10 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    /**
-     * Test simple d'envoi de mail
-     */
+     // Test simple d'envoi de mail
+      
+     /**
+     
     public void sendTestEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("kakti@alwaysdata.net"); // expéditeur Alwaysdata
@@ -26,9 +50,10 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    /**
-     * Envoi d'un email de confirmation (utilisé dans MailTestController)
-     */
+    
+     //Envoi d'un email de confirmation (utilisé dans MailTestController)
+     
+    
     public void sendConfirmationEmail(String to, String username, String code, LocalDate date) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("kakti@alwaysdata.net");
@@ -42,9 +67,9 @@ public class EmailService {
     }
 
     /**
-     * Envoi d'un email quand un utilisateur remplit le formulaire de contact
-     * (utilisé dans ContactController)
-     */
+     // Envoi d'un email quand un utilisateur remplit le formulaire de contact
+     // (utilisé dans ContactController)
+     
     public void sendContactEmail(Contact contact) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("kakti@alwaysdata.net");
@@ -57,8 +82,8 @@ public class EmailService {
     }
     
     /**
-     * Envoi d'un email de confirmation de réservation avec numéro de ticket
-     */
+     // Envoi d'un email de confirmation de réservation avec numéro de ticket
+     
     public void sendTicketConfirmationEmail(String to, String firstName, String lastName, String ticketNumber, LocalDate visitDate) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("kakti@alwaysdata.net");
@@ -72,5 +97,5 @@ public class EmailService {
                 "À très bientôt au Zoo Autruche & Compagnie !");
         mailSender.send(message);
     }
-
 }
+*/
