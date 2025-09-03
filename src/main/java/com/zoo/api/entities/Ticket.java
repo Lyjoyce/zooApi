@@ -12,18 +12,28 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(
+        name = "ticket",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "ticket_number"),
+                @UniqueConstraint(columnNames = {"email", "visit_date"}) // ❌ empêche doublon même email / même jour
+        }
+)
 public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Numéro de ticket généré automatiquement
+    @Column(name = "ticket_number", nullable = false, unique = true)
     private String ticketNumber;
 
     private String firstName;
     private String lastName;
+
+    @Column(nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String adultType;
 
@@ -38,7 +48,7 @@ public class Ticket {
     @Builder.Default
     private boolean confirmed = false;
 
-    // Génère un ticketNumber simple de type "TICKET-xxxx"
+    // Génère un numéro unique
     @PrePersist
     public void generateTicketNumber() {
         if (this.ticketNumber == null || this.ticketNumber.isBlank()) {

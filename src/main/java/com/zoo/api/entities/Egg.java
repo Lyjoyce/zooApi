@@ -25,6 +25,7 @@ public class Egg {
     private boolean validatedByVet = false;
 
     private LocalDate validationDate;
+    private LocalDate conservationEndDate;
 
     @ManyToOne
     @JoinColumn(name = "ostrich_id")

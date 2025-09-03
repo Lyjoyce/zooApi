@@ -26,6 +26,18 @@ public class TicketService {
         DayOfWeek.THURSDAY,
         DayOfWeek.FRIDAY
     );
+    
+
+    public Ticket createTicket(Ticket ticket) {
+        // Vérifier si un ticket existe déjà pour cet email et cette date
+        ticketRepository.findByEmailAndVisitDate(ticket.getEmail(), ticket.getVisitDate())
+                .ifPresent(existing -> {
+                    throw new IllegalStateException("Un ticket existe déjà pour " + ticket.getEmail() +
+                            " à la date " + ticket.getVisitDate());
+                });
+
+        return ticketRepository.save(ticket);
+    }
 
     public Ticket createTicket(String firstName, String lastName, String email, String adultType,
                                LocalDate visitDate, int nbAdultes, int nbEnfants,

@@ -16,5 +16,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
         String firstNam,
        LocalDate visitDate
     );
+    Optional<Ticket> findByEmailAndVisitDate(String email, LocalDate visitDate);
+    boolean existsByTicketNumber(String ticketNumber);
 }
 

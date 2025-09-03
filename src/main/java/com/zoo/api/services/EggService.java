@@ -144,4 +144,17 @@ public class EggService {
 
         return eggRepository.save(egg);
     }
+    
+       // Conservation : 30 ou 60 jours
+    public Egg conserveEgg(Long eggId, int days) {
+        Egg egg = eggRepository.findById(eggId)
+                .orElseThrow(() -> new IllegalArgumentException("Œuf non trouvé"));
+        if (!egg.isValidatedByVet()) {
+            throw new IllegalStateException("Œuf non validé par le vétérinaire");
+        }
+       //  Ajout de la date de conservation
+        egg.setConservationEndDate(LocalDate.now().plusDays(days));
+        return eggRepository.save(egg);
+    }
+
 }

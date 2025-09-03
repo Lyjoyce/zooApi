@@ -19,6 +19,16 @@ public class TicketController {
     private final TicketService ticketService;
 
     @PostMapping
+    public ResponseEntity<?> createTicket(@RequestBody Ticket ticket) {
+        try {
+            Ticket saved = ticketService.createTicket(ticket);
+            return ResponseEntity.ok(saved);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage()); // 409 = Conflict
+        }
+    }
+
+    @PostMapping
     public ResponseEntity<?> reserve(@RequestBody AdultTicketRequest request) {
         try {
             Ticket ticket = ticketService.createTicket(
