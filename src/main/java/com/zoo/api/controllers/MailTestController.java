@@ -7,6 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
+/**
+ * Contrôleur REST de test pour vérifier l'envoi (simulé) d'emails.
+ * Exemple d'appel :
+ *  - http://localhost:8080/test-mail?to=destinataire@test.com
+ *  - http://localhost:8080/test-confirmation?to=destinataire@test.com
+ */
 @RestController
 public class MailTestController {
 
@@ -17,17 +23,20 @@ public class MailTestController {
     }
 
     /**
-     * Exemple : http://localhost:8080/test-mail?to=destinataire@test.com
+     * Test d'un email simple.
      */
     @GetMapping("/test-mail")
     public String testMail(@RequestParam String to) {
-        try {
-            emailService.sendConfirmationEmail(to, "TestUser", "TEST-123456", LocalDate.now());
-            return " Email envoyé avec succès à " + to;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "❌ Erreur lors de l'envoi de l'email : " + e.getMessage();
-        }
+        emailService.sendTestEmail(to);
+        return " Email de test simulé pour : " + to;
+    }
+
+    /**
+     * Test d'un email de confirmation.
+     */
+    @GetMapping("/test-confirmation")
+    public String testConfirmation(@RequestParam String to) {
+        emailService.sendConfirmationEmail(to, "TestUser", "TEST-123456", LocalDate.now());
+        return " Email de confirmation simulé pour : " + to;
     }
 }
-

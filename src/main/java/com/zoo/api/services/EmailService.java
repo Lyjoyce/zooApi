@@ -1,101 +1,59 @@
 package com.zoo.api.services;
 
-import java.time.LocalDate;
-
+import com.zoo.api.documents.Contact;
 import org.springframework.stereotype.Service;
 
-@Service
-public class EmailService {
-
-    // private JavaMailSender mailSender; // supprimé temporairement
-
-    public void sendTestEmail(String to) {
-        // rien pour l'instant
-        System.out.println("Mail bloqué à " + to);
-    }
-
-    public void sendTicketConfirmationEmail(String to, String firstName, String lastName,
-                                            String ticketNumber, LocalDate visitDate) {
-        System.out.println("Mail bloqué pour " + firstName + " " + lastName);
-    }
-}
+import java.time.LocalDate;
 
 /**
-
-
-import com.zoo.api.documents.Contact;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-
+ * Service gérant l'envoi des emails pour l'application Zoo Autruche & Compagnie.
+ * NOTE : Envoi réel bloqué (SMTP Alwaysdata désactivé).
+ *        Les appels affichent simplement un message en console.
+ */
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-
-     // Test simple d'envoi de mail
-      
-     /**
-     
+    /**
+     * Test simple d'envoi d'email.
+     *
+     * @param to adresse du destinataire
+     */
     public void sendTestEmail(String to) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("kakti@alwaysdata.net"); // expéditeur Alwaysdata
-        message.setTo(to);
-        message.setSubject(" Test email Zoo Autruche & Compagnie");
-        message.setText("Bravo ! Ton envoi d'email via Alwaysdata SMTP fonctionne 🎉");
-        mailSender.send(message);
-    }
-
-    
-     //Envoi d'un email de confirmation (utilisé dans MailTestController)
-     
-    
-    public void sendConfirmationEmail(String to, String username, String code, LocalDate date) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("kakti@alwaysdata.net");
-        message.setTo(to);
-        message.setSubject("Confirmation d’inscription - Zoo Autruche & Compagnie");
-        message.setText("Bonjour " + username + ",\n\n" +
-                "Voici ton code de confirmation : " + code +
-                "\nDate : " + date +
-                "\n\nMerci de ta confiance 🦩 !");
-        mailSender.send(message);
+        System.out.println("✅ [SIMULATION] Email de test envoyé à : " + to);
     }
 
     /**
-     // Envoi d'un email quand un utilisateur remplit le formulaire de contact
-     // (utilisé dans ContactController)
-     
+     * Envoi simulé d'un email de confirmation de ticket.
+     *
+     * @param to           adresse du destinataire
+     * @param firstName    prénom du destinataire
+     * @param lastName     nom du destinataire
+     * @param ticketNumber numéro du ticket
+     * @param visitDate    date de visite
+     */
+    public void sendTicketConfirmationEmail(String to, String firstName, String lastName,
+                                            String ticketNumber, LocalDate visitDate) {
+        System.out.println("✅ [SIMULATION] Confirmation envoyée à " + firstName + " " + lastName
+                + " | Ticket : " + ticketNumber + " | Date : " + visitDate);
+    }
+
+    /**
+     * Version simplifiée pour `AdultTicketService` :
+     * confirmation sans lastName.
+     */
+    public void sendConfirmationEmail(String to, String firstName, String ticketNumber, LocalDate visitDate) {
+        System.out.println("✅ [SIMULATION] Confirmation envoyée à " + firstName
+                + " | Ticket : " + ticketNumber + " | Date : " + visitDate);
+    }
+
+    /**
+     * Envoi simulé d'un email de contact.
+     *
+     * @param contact message de contact reçu
+     */
     public void sendContactEmail(Contact contact) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("kakti@alwaysdata.net");
-        message.setTo("kakti@alwaysdata.net"); // boîte de réception commune
-        message.setSubject("📩 Nouveau message de contact");
-        message.setText("Nom : " + contact.getName() + "\n" +
-                        "Email : " + contact.getEmail() + "\n" +
-                        "Message : " + contact.getMessage());
-        mailSender.send(message);
-    }
-    
-    /**
-     // Envoi d'un email de confirmation de réservation avec numéro de ticket
-     
-    public void sendTicketConfirmationEmail(String to, String firstName, String lastName, String ticketNumber, LocalDate visitDate) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("kakti@alwaysdata.net");
-        message.setTo(to);
-        message.setSubject("🎟 Confirmation de réservation - Zoo Autruche & Compagnie");
-        message.setText("Bonjour " + firstName + " " + lastName + ",\n\n" +
-                "Merci pour ta réservation au Zoo Autruche & Compagnie 🦩.\n\n" +
-                "👉 Ton numéro de ticket est : " + ticketNumber + "\n" +
-                "📅 Date de visite : " + visitDate + "\n\n" +
-                "Conserve bien ce numéro, il te sera demandé à l’entrée.\n\n" +
-                "À très bientôt au Zoo Autruche & Compagnie !");
-        mailSender.send(message);
+        System.out.println("✅ [SIMULATION] Contact enregistré : " + contact.getEmail()
+                + " | Sujet : " + contact.getSubject()
+                + " | Message : " + contact.getMessage());
     }
 }
-*/
