@@ -32,7 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // explicit CORS
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS activé
             .authorizeHttpRequests(auth -> auth
                 // --- PUBLIC ---
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // prévol CORS
@@ -57,16 +57,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "https://lyjoyce.github.io" // GitHub Pages
-            // ajoute ici ton domaine front en prod si différent
-        ));
+
+        // ✅ Plus souple : accepte exactement GitHub Pages + localhost en dev
+        configuration.addAllowedOriginPattern("https://lyjoyce.github.io");
+        configuration.addAllowedOriginPattern("http://localhost:*");
+        configuration.addAllowedOriginPattern("http://127.0.0.1:*");
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Authorization", "Location")); // exposer les headers JWT ou Location si nécessaire
+        configuration.setExposedHeaders(List.of("Authorization", "Location")); 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -80,6 +80,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // encodage sécurisé des mots de passe
+        return new BCryptPasswordEncoder();
     }
 }
