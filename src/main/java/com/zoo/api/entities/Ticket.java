@@ -40,6 +40,10 @@ public class Ticket {
     private LocalDate visitDate;
     private int nbEnfants;
     private int nbAdultes;
+    
+    @ManyToOne
+    @JoinColumn(name = "adult_id", nullable = false)
+    private Adult adult;
 
     @Builder.Default
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)

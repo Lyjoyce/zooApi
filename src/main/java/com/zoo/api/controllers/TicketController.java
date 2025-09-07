@@ -18,6 +18,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
+    // Création simple d'un ticket (ancienne route)
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody Ticket ticket) {
         try {
@@ -28,7 +29,8 @@ public class TicketController {
         }
     }
 
-    @PostMapping ("/reserve")
+    // Route /reserve pour réservation avec association à un Adult
+    @PostMapping("/reserve")
     public ResponseEntity<?> reserve(@RequestBody AdultTicketRequest request) {
         try {
             Ticket ticket = ticketService.createTicket(
@@ -37,24 +39,27 @@ public class TicketController {
                 request.getEmail(),
                 request.getAdultType(),
                 request.getVisitDate(),
-                request.getNbEnfants(),   // directement int
-                request.getNbAdultes(), 
-                request.getAteliers() // déjà une List<String>
+                request.getNbAdultes(),
+                request.getNbEnfants(),
+                request.getAteliers()
             );
 
+            // La liaison à l'adulte est déjà faite dans TicketService
             return ResponseEntity.ok(ticket);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) { // Adult non trouvé
+            return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Erreur inattendue : " + e.getMessage());
         }
     }
 
+    // Récupérer tous les tickets
     @GetMapping("/all")
     public ResponseEntity<List<Ticket>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
-    
 }

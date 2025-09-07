@@ -7,8 +7,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.zoo.api.entities.Adult;
 import com.zoo.api.entities.Ticket;
 import com.zoo.api.entities.TicketWorkshop;
+import com.zoo.api.repositories.AdultRepository;
 import com.zoo.api.repositories.TicketRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final AdultRepository adultRepository;
     private final EmailService emailService; // Injection du service email
 
     private static final List<DayOfWeek> JOURS_AUTORISES = List.of(
@@ -38,65 +41,63 @@ public class TicketService {
 
         return ticketRepository.save(ticket);
     }
-
     public Ticket createTicket(String firstName, String lastName, String email, String adultType,
-                               LocalDate visitDate, int nbAdultes, int nbEnfants,
-                               List<String> ateliers) {
+            LocalDate visitDate, int nbAdultes, int nbEnfants,
+            List<String> ateliers) {
 
-        //  Vérif ratio adulte/enfants
-        if (nbAdultes <= 0 || nbEnfants / nbAdultes > 6) {
-            throw new IllegalArgumentException("1 adulte pour 6 enfants maximum.");
-        }
+if (nbAdultes <= 0 || nbEnfants / nbAdultes > 6) {
+throw new IllegalArgumentException("1 adulte pour 6 enfants maximum.");
+}
 
-        //  Vérif jours autorisés
-        if (!JOURS_AUTORISES.contains(visitDate.getDayOfWeek())) {
-            throw new IllegalArgumentException("Les ateliers sont uniquement disponibles lundi, mardi, jeudi et vendredi.");
-        }
+if (!JOURS_AUTORISES.contains(visitDate.getDayOfWeek())) {
+throw new IllegalArgumentException("Les ateliers sont uniquement disponibles lundi, mardi, jeudi et vendredi.");
+}
 
-        //  Vérif ateliers
-        if (ateliers == null || ateliers.isEmpty()) {
-            throw new IllegalArgumentException("Veuillez sélectionner au moins un atelier.");
-        }
+if (ateliers == null || ateliers.isEmpty()) {
+throw new IllegalArgumentException("Veuillez sélectionner au moins un atelier.");
+}
 
-        //  Génération numéro ticket
-        String ticketNumber = "TCK-" + System.currentTimeMillis();
+String ticketNumber = "TCK-" + System.currentTimeMillis();
 
-        //  Création du ticket
-        Ticket ticket = Ticket.builder()
-                .ticketNumber(ticketNumber)
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .adultType(adultType)
-                .visitDate(visitDate)
-                .nbAdultes(nbAdultes)
-                .nbEnfants(nbEnfants)
-                .confirmed(false)
-                .workshops(new ArrayList<>())
-                .build();
+Ticket ticket = Ticket.builder()
+.ticketNumber(ticketNumber)
+.firstName(firstName)
+.lastName(lastName)
+.email(email)
+.adultType(adultType)
+.visitDate(visitDate)
+.nbAdultes(nbAdultes)
+.nbEnfants(nbEnfants)
+.confirmed(false)
+.workshops(new ArrayList<>())
+.build();
 
-        //  Ajout des workshops liés
-        ateliers.forEach(atelier -> {
-            TicketWorkshop workshop = TicketWorkshop.builder()
-                    .atelier(atelier)
-                    .ticket(ticket)
-                    .build();
-            ticket.getWorkshops().add(workshop);
-        });
+ateliers.forEach(atelier -> {
+TicketWorkshop workshop = TicketWorkshop.builder()
+ .atelier(atelier)
+ .ticket(ticket)
+ .build();
+ticket.getWorkshops().add(workshop);
+});
 
-        //  Sauvegarde en base
-        Ticket savedTicket = ticketRepository.save(ticket);
+// ✅ Associer l'adulte existant
+Adult adult = adultRepository.findByEmail(email)
+.orElseThrow(() -> new RuntimeException("Adult non trouvé"));
+ticket.setAdult(adult);
 
-        //  Envoi email confirmation
-        emailService.sendTicketConfirmationEmail(
-                savedTicket.getEmail(),
-                savedTicket.getFirstName(),
-                savedTicket.getLastName(),
-                savedTicket.getTicketNumber(),
-                savedTicket.getVisitDate()
-        );
+Ticket savedTicket = ticketRepository.save(ticket);
 
-        return savedTicket;
+emailService.sendTicketConfirmationEmail(
+savedTicket.getEmail(),
+savedTicket.getFirstName(),
+savedTicket.getLastName(),
+savedTicket.getTicketNumber(),
+savedTicket.getVisitDate()
+);
+
+return savedTicket;
+
+    
     }
 
     public List<Ticket> getAllTickets() {
