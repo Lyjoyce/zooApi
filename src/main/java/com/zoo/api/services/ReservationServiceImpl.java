@@ -80,11 +80,11 @@ public class ReservationServiceImpl implements ReservationService {
         // Libérer les œufs précédemment utilisés si modification
         if (existing.getWorkshops() != null) {
             existing.getWorkshops().forEach(w -> {
-                if (w.getType() == WorkshopType.OMELETTE && w.getUsedEgg() != null) {
-                    Egg egg = w.getUsedEgg();
-                    egg.setUsed(false);
+                if (w.getType() == WorkshopType.OMELETTE && w.getAllocatedEgg() != null) {
+                    Egg egg = w.getAllocatedEgg();
+                    egg.setAllocated(false);
                     eggService.saveEgg(egg);
-                    w.setUsedEgg(null);
+                    w.setAllocatedEgg(null);
                 }
             });
         }
@@ -108,9 +108,9 @@ public class ReservationServiceImpl implements ReservationService {
 
         if (reservation.getWorkshops() != null) {
             reservation.getWorkshops().forEach(workshop -> {
-                if (workshop.getType() == WorkshopType.OMELETTE && workshop.getUsedEgg() != null) {
-                    Egg egg = workshop.getUsedEgg();
-                    egg.setUsed(false);
+                if (workshop.getType() == WorkshopType.OMELETTE && workshop.getAllocatedEgg() != null) {
+                    Egg egg = workshop.getAllocatedEgg();
+                    egg.setAllocated(false);
                     eggService.saveEgg(egg);
                 }
             });
@@ -161,9 +161,9 @@ public class ReservationServiceImpl implements ReservationService {
 
                 for (int i = 0; i < omeletteWorkshops.size(); i++) {
                     Egg egg = eggsToUse.get(i);
-                    egg.setUsed(true);
+                    egg.setAllocated(true);
                     eggService.saveEgg(egg);
-                    omeletteWorkshops.get(i).setUsedEgg(egg);
+                    omeletteWorkshops.get(i).setAllocatedEgg(egg);
                 }
             }
         }

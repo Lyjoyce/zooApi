@@ -18,16 +18,16 @@ public interface EggRepository extends JpaRepository<Egg, Long> {
     List<Egg> findByActiveTrue();
 
     // Œufs non utilisés et actifs
-    List<Egg> findByUsedFalseAndActiveTrue();
+    List<Egg> findByAllocatedFalseAndActiveTrue();
 
     // Œufs non utilisés et actifs, triés par date de ponte croissante (FIFO)
-    List<Egg> findByUsedFalseAndActiveTrueOrderByDateLaidAsc();
+    List<Egg> findByAllocatedFalseAndActiveTrueOrderByDateLaidAsc();
 
     // Œufs utilisables : non utilisés, actifs et validés par un vétérinaire
-    List<Egg> findByUsedFalseAndActiveTrueAndValidatedByVetTrue();
+    List<Egg> findByAllocatedFalseAndActiveTrueAndValidatedByVetTrue();
 
     // Œufs non utilisés, actifs mais non encore validés
-    List<Egg> findByUsedFalseAndActiveTrueAndValidatedByVetFalse();
+    List<Egg> findByAllocatedFalseAndActiveTrueAndValidatedByVetFalse();
 
     // Statistiques : nombre d’œufs pondus par jour
     @Query("SELECT e.dateLaid AS date, COUNT(e) AS count " +

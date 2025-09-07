@@ -47,7 +47,7 @@ public class EggDataLoader implements CommandLineRunner {
             for (int i = 0; i < 30; i++) {
                 Egg egg = new Egg();
                 egg.setActive(true);
-                egg.setUsed(false);
+                egg.setAllocated(false);
                 egg.setValidatedByVet(false);
                 egg.setDateLaid(startDate.plusDays(i));
 

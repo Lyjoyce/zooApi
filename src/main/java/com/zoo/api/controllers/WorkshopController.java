@@ -45,7 +45,7 @@ public class WorkshopController {
                     ws.setType(updatedWorkshop.getType());
                     ws.setEmployee(updatedWorkshop.getEmployee());
                     ws.setReservation(updatedWorkshop.getReservation());
-                    ws.setUsedEgg(updatedWorkshop.getUsedEgg());
+                    ws.setAllocatedEgg(updatedWorkshop.getAllocatedEgg());
                     return ResponseEntity.ok(workshopService.saveWorkshop(ws));
                 }).orElse(ResponseEntity.notFound().build());
     }

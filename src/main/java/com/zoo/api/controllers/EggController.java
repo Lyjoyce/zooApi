@@ -65,5 +65,10 @@ public class EggController {
         eggService.deleteEgg(id);
         return ResponseEntity.noContent().build();
     }
-}
+
+        @PostMapping("/{id}/conserve")
+        public Egg conserveEgg(@PathVariable Long id, @RequestParam int days) {
+            return eggService.conserveEgg(id, days);
+        }
+    }
 

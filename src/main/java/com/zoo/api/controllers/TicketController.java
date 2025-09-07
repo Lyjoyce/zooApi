@@ -28,7 +28,7 @@ public class TicketController {
         }
     }
 
-    @PostMapping
+    @PostMapping ("/reserve")
     public ResponseEntity<?> reserve(@RequestBody AdultTicketRequest request) {
         try {
             Ticket ticket = ticketService.createTicket(

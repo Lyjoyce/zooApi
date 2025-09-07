@@ -53,7 +53,7 @@ public class EggService {
         egg.setOstrich(ostrich);
         egg.setDateLaid(dateLaid);
         egg.setActive(true);
-        egg.setUsed(false);
+        egg.setAllocated(false);
         egg.setValidatedByVet(false);
 
         return eggRepository.save(egg);
@@ -66,27 +66,27 @@ public class EggService {
     public Optional<Egg> getEggById(Long id) { return eggRepository.findById(id); }
 
     public List<Egg> getAvailableEggsOrderedByDate(int quantity) {
-        List<Egg> availableEggs = eggRepository.findByUsedFalseAndActiveTrueOrderByDateLaidAsc();
+        List<Egg> availableEggs = eggRepository.findByAllocatedFalseAndActiveTrueOrderByDateLaidAsc();
         if (availableEggs.size() < quantity) {
             throw new IllegalArgumentException("Pas assez d'œufs disponibles.");
         }
         return availableEggs.subList(0, quantity);
     }
 
-    public boolean hasAvailableEgg() { return !eggRepository.findByUsedFalseAndActiveTrue().isEmpty(); }
+    public boolean hasAvailableEgg() { return !eggRepository.findByAllocatedFalseAndActiveTrue().isEmpty(); }
 
     public Optional<Egg> getOneAvailableEgg() {
-        return eggRepository.findByUsedFalseAndActiveTrue().stream().findFirst();
+        return eggRepository.findByAllocatedFalseAndActiveTrue().stream().findFirst();
     }
 
     public List<Egg> reserveEggs(int quantity) {
         List<Egg> eggsToReserve = getAvailableEggsOrderedByDate(quantity);
-        eggsToReserve.forEach(egg -> egg.setUsed(true));
+        eggsToReserve.forEach(egg -> egg.setAllocated(true));
         return eggRepository.saveAll(eggsToReserve);
     }
 
     public void releaseEggs(List<Egg> eggs) {
-        eggs.forEach(egg -> egg.setUsed(false));
+        eggs.forEach(egg -> egg.setAllocated(false));
         eggRepository.saveAll(eggs);
     }
 
@@ -105,14 +105,14 @@ public class EggService {
 
     public List<Egg> getEggsToValidate() {
         LocalDate today = LocalDate.now();
-        return eggRepository.findByUsedFalseAndActiveTrueAndValidatedByVetFalse()
+        return eggRepository.findByAllocatedFalseAndActiveTrueAndValidatedByVetFalse()
                 .stream()
                 .filter(egg -> ChronoUnit.DAYS.between(egg.getDateLaid(), today) <= 10)
                 .toList();
     }
 
     public List<Egg> getValidEggsForAtelier() {
-        return eggRepository.findByUsedFalseAndActiveTrueAndValidatedByVetTrue();
+        return eggRepository.findByAllocatedFalseAndActiveTrueAndValidatedByVetTrue();
     }
 
     public List<Egg> getAllActiveEggs() { return eggRepository.findByActiveTrue(); }
@@ -131,7 +131,7 @@ public class EggService {
                 .orElseThrow(() -> new IllegalArgumentException("Œuf non trouvé avec l'id : " + id));
 
         egg.setDateLaid(updatedEgg.getDateLaid());
-        egg.setUsed(updatedEgg.isUsed());
+        egg.setAllocated(updatedEgg.isAllocated());
 
         // Si on change l'autruche, on vérifie aussi qu'elle est femelle
         if (updatedEgg.getOstrich() != null) {

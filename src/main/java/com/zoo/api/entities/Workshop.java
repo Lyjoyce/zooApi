@@ -28,7 +28,7 @@ public class Workshop {
     private Employee employee;
 
     @OneToOne
-    private Egg usedEgg; // uniquement si type == OMELETTE
+    private Egg allocatedEgg; // uniquement si type == OMELETTE
     
     @ManyToOne
     @JoinColumn(name = "reservation_id")

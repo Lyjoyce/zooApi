@@ -18,7 +18,7 @@ public class Egg {
     private Long id;
 
     private LocalDate dateLaid;
-    private boolean used; // utilisé ou pas pour atelier
+    private boolean allocated; // attribué ou pas pour un atelier
 
     private boolean active = true; // soft delete
     
