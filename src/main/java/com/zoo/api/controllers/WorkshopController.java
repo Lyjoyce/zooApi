@@ -15,6 +15,12 @@ public class WorkshopController {
 
     private final WorkshopService workshopService;
     
+    @PostMapping("/{id}/assign-egg")
+    public ResponseEntity<Workshop> assignEgg(@PathVariable Long id) {
+        Workshop updatedWorkshop = workshopService.assignEggToWorkshop(id);
+        return ResponseEntity.ok(updatedWorkshop);
+    }
+    
     @GetMapping("/disponibles")
     public ResponseEntity<List<String>> getAteliersDisponibles() {
         return ResponseEntity.ok(workshopService.getAvailableWorkshops());

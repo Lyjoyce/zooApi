@@ -2,7 +2,6 @@ package com.zoo.api.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(
-        name = "ticket",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "ticket_number"),
-                @UniqueConstraint(columnNames = {"email", "visit_date"}) // ❌ empêche doublon même email / même jour
-        }
+    name = "ticket",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "ticket_number")
+    }
 )
 public class Ticket {
 
@@ -40,14 +38,21 @@ public class Ticket {
     private LocalDate visitDate;
     private int nbEnfants;
     private int nbAdultes;
-    
+
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Reservation reservation;
+
+
     @ManyToOne
     @JoinColumn(name = "adult_id", nullable = false)
     private Adult adult;
 
     @Builder.Default
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TicketWorkshop> workshops = new ArrayList<>();
+    private List<Workshop> workshops = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList<>();
 
     @Builder.Default
     private boolean confirmed = false;

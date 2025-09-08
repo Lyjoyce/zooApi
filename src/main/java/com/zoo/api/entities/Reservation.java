@@ -1,16 +1,16 @@
 package com.zoo.api.entities;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Reservation {
 
     @Id
@@ -18,17 +18,27 @@ public class Reservation {
     private Long id;
 
     private LocalDate reservationDate;
+    
+ // Reservation.java
+    @OneToOne
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
+
+    @ManyToMany
+    @JoinTable(
+        name = "reservation_workshops",
+        joinColumns = @JoinColumn(name = "reservation_id"),
+        inverseJoinColumns = @JoinColumn(name = "workshop_id")
+    )
 
     @ManyToOne
+    @JoinColumn(name = "adult_id")
     private Adult createdBy;
 
- // Nombre d'enfants (au lieu d'une liste de Child)
     private int nbChildren;
-
-    // Nombre d’adultes accompagnateurs (y compris celui qui réserve)
     private int nbAdults;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
-    private List<Workshop> workshops;
-
+    @Builder.Default
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Workshop> workshops = new ArrayList<>();
 }
