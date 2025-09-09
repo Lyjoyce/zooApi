@@ -38,18 +38,14 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationMapper = reservationMapper;
     }
 
-    // CREATE
+    // ---------------------- CREATE ----------------------
     @Override
     @Transactional
     public ReservationDTO saveReservation(ReservationDTO dto) {
         Adult adult = adultRepository.findById(dto.getCreatedById())
                 .orElseThrow(() -> new IllegalArgumentException("Adulte introuvable avec l'id: " + dto.getCreatedById()));
 
-        if (dto.getNbChildren() > dto.getNbAdults() * 6) {
-            throw new IllegalArgumentException("Un adulte peut surveiller au maximum 6 enfants. "
-                    + "Réservation refusée : " + dto.getNbChildren() + " enfants pour "
-                    + dto.getNbAdults() + " adultes.");
-        }
+        validateAdultChildRatio(dto.getNbAdults(), dto.getNbChildren());
 
         Reservation reservation = reservationMapper.toEntity(dto);
         reservation.setCreatedBy(adult);
@@ -60,42 +56,28 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationMapper.toDto(saved);
     }
 
-    // UPDATE
+    // ---------------------- UPDATE ----------------------
     @Override
     @Transactional
     public ReservationDTO updateReservation(Long id, ReservationDTO dto) {
         Reservation existing = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réservation introuvable avec l'id: " + id));
 
-        if (dto.getNbChildren() > dto.getNbAdults() * 6) {
-            throw new IllegalArgumentException("Un adulte peut surveiller au maximum 6 enfants. "
-                    + "Mise à jour refusée : " + dto.getNbChildren() + " enfants pour "
-                    + dto.getNbAdults() + " adultes.");
-        }
+        validateAdultChildRatio(dto.getNbAdults(), dto.getNbChildren());
 
         existing.setNbAdults(dto.getNbAdults());
         existing.setNbChildren(dto.getNbChildren());
         existing.setReservationDate(dto.getReservationDate());
 
-        // Libérer les œufs précédemment utilisés si modification
-        if (existing.getWorkshops() != null) {
-            existing.getWorkshops().forEach(w -> {
-                if (w.getType() == WorkshopType.OMELETTE && w.getAllocatedEgg() != null) {
-                    Egg egg = w.getAllocatedEgg();
-                    egg.setAllocated(false);
-                    eggService.saveEgg(egg);
-                    w.setAllocatedEgg(null);
-                }
-            });
-        }
+        releaseEggs(existing); // libération des œufs précédemment alloués
 
         handleWorkshopsAndEggs(dto, existing);
 
         Reservation updated = reservationRepository.save(existing);
         return reservationMapper.toDto(updated);
     }
-    
-    // DELETE
+
+    // ---------------------- DELETE ----------------------
     @Override
     @Transactional
     public void cancelReservation(Long reservationId) {
@@ -106,20 +88,12 @@ public class ReservationServiceImpl implements ReservationService {
             throw new IllegalStateException("Impossible d’annuler une réservation déjà passée.");
         }
 
-        if (reservation.getWorkshops() != null) {
-            reservation.getWorkshops().forEach(workshop -> {
-                if (workshop.getType() == WorkshopType.OMELETTE && workshop.getAllocatedEgg() != null) {
-                    Egg egg = workshop.getAllocatedEgg();
-                    egg.setAllocated(false);
-                    eggService.saveEgg(egg);
-                }
-            });
-        }
+        releaseEggs(reservation);
 
         reservationRepository.delete(reservation);
     }
 
- // READ ALL
+    // ---------------------- READ ----------------------
     @Override
     public List<ReservationDTO> getAllReservations() {
         return reservationRepository.findAll()
@@ -128,46 +102,63 @@ public class ReservationServiceImpl implements ReservationService {
                 .collect(Collectors.toList());
     }
 
- // READ ONE
     @Override
     public ReservationDTO getReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réservation introuvable avec l'id: " + id));
         return reservationMapper.toDto(reservation);
     }
-    
+
+    // ---------------------- PRIVATE METHODS ----------------------
+    private void validateAdultChildRatio(int nbAdults, int nbChildren) {
+        if (nbChildren > nbAdults * 6) {
+            throw new IllegalArgumentException("Un adulte peut surveiller au maximum 6 enfants. "
+                    + "Ratio actuel : " + nbChildren + " enfants pour " + nbAdults + " adultes.");
+        }
+    }
+
+    private void releaseEggs(Reservation reservation) {
+        if (reservation.getWorkshops() != null) {
+            reservation.getWorkshops().forEach(w -> {
+                if (w.getType() == WorkshopType.OMELETTE && w.getAllocatedEgg() != null) {
+                    Egg egg = w.getAllocatedEgg();
+                    egg.setAllocated(false);
+                    eggService.saveEgg(egg);
+                    w.setAllocatedEgg(null);
+                }
+            });
+        }
+    }
+
     @Transactional
     private void handleWorkshopsAndEggs(ReservationDTO dto, Reservation reservation) {
-        if (dto.getWorkshopIds() != null && !dto.getWorkshopIds().isEmpty()) {
-            List<Workshop> workshops = workshopRepository.findAllById(dto.getWorkshopIds());
-            if (workshops.size() != dto.getWorkshopIds().size()) {
-                throw new IllegalArgumentException("Certains ateliers sont introuvables en base.");
+        if (dto.getWorkshopIds() == null || dto.getWorkshopIds().isEmpty()) return;
+
+        List<Workshop> workshops = workshopRepository.findAllById(dto.getWorkshopIds());
+        if (workshops.size() != dto.getWorkshopIds().size()) {
+            throw new IllegalArgumentException("Certains ateliers sont introuvables en base.");
+        }
+
+        workshops.forEach(w -> w.setReservation(reservation));
+        reservation.setWorkshops(workshops);
+
+        // Allouer les œufs pour les ateliers omelette
+        List<Workshop> omeletteWorkshops = workshops.stream()
+                .filter(w -> w.getType() == WorkshopType.OMELETTE)
+                .toList();
+
+        if (!omeletteWorkshops.isEmpty()) {
+            List<Egg> eggsToUse = eggService.getAvailableEggsOrderedByDate(omeletteWorkshops.size());
+            if (eggsToUse.size() < omeletteWorkshops.size()) {
+                throw new IllegalStateException("Pas assez d'œufs disponibles pour les ateliers omelette.");
             }
 
-            workshops.forEach(w -> w.setReservation(reservation));
-            reservation.setWorkshops(workshops);
-
-            // Gérer œufs pour ateliers omelette
-            List<Workshop> omeletteWorkshops = workshops.stream()
-                    .filter(w -> w.getType() == WorkshopType.OMELETTE)
-                    .collect(Collectors.toList());
-
-            if (!omeletteWorkshops.isEmpty()) {
-                List<Egg> eggsToUse = eggService.getAvailableEggsOrderedByDate(omeletteWorkshops.size());
-
-                if (eggsToUse.size() < omeletteWorkshops.size()) {
-                    throw new IllegalStateException("Pas assez d'œufs disponibles pour les ateliers omelette.");
-                }
-
-                for (int i = 0; i < omeletteWorkshops.size(); i++) {
-                    Egg egg = eggsToUse.get(i);
-                    egg.setAllocated(true);
-                    eggService.saveEgg(egg);
-                    omeletteWorkshops.get(i).setAllocatedEgg(egg);
-                }
+            for (int i = 0; i < omeletteWorkshops.size(); i++) {
+                Egg egg = eggsToUse.get(i);
+                egg.setAllocated(true);
+                eggService.saveEgg(egg);
+                omeletteWorkshops.get(i).setAllocatedEgg(egg);
             }
         }
     }
 }
-
-

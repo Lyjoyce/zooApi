@@ -18,19 +18,13 @@ public class Reservation {
     private Long id;
 
     private LocalDate reservationDate;
-    
- // Reservation.java
-    @OneToOne
-    @JoinColumn(name = "ticket_id")
+
+    // Chaque réservation appartient à un ticket
+    @ManyToOne
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
-    @ManyToMany
-    @JoinTable(
-        name = "reservation_workshops",
-        joinColumns = @JoinColumn(name = "reservation_id"),
-        inverseJoinColumns = @JoinColumn(name = "workshop_id")
-    )
-
+    // L’adulte qui a créé la réservation
     @ManyToOne
     @JoinColumn(name = "adult_id")
     private Adult createdBy;
@@ -38,6 +32,7 @@ public class Reservation {
     private int nbChildren;
     private int nbAdults;
 
+    // Une réservation peut concerner plusieurs ateliers
     @Builder.Default
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Workshop> workshops = new ArrayList<>();

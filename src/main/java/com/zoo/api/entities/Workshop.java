@@ -31,13 +31,12 @@ public class Workshop {
     @JoinColumn(name = "egg_id")
     private Egg allocatedEgg; // uniquement si type == OMELETTE
 
+    // Chaque atelier appartient à une réservation
     @ManyToOne
-    @JoinColumn(name = "reservation_id")
+    @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
-    @ManyToOne
-    @JoinColumn(name = "ticket_id")
-    private Ticket ticket;
+    // 🔴 supprimé : la relation directe vers Ticket (déjà indirecte via Reservation)
 
     // Méthode pour attribuer un œuf
     public void assignEgg(Egg egg) {

@@ -12,8 +12,7 @@ import lombok.Data;
 @Data
 public class AdultTicketRequest {
 
-    // Le numéro de ticket sera généré automatiquement, pas besoin de le fournir
-    private Long ticketNumber;
+    private Long ticketNumber; // généré automatiquement
 
     @NotEmpty(message = "Le prénom est obligatoire")
     private String firstName;
@@ -26,7 +25,7 @@ public class AdultTicketRequest {
     private String email;
 
     @NotEmpty(message = "Le type d'adulte est obligatoire")
-    private String adultType;
+    private String adultType; // sera converti en AdultType enum
 
     @NotNull(message = "La date de visite est obligatoire")
     private LocalDate visitDate;

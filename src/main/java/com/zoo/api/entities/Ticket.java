@@ -36,28 +36,20 @@ public class Ticket {
     private String adultType;
 
     private LocalDate visitDate;
-    private int nbEnfants;
-    private int nbAdultes;
-
-    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Reservation reservation;
-
+    private int nbChildren;
+    private int nbAdults;
 
     @ManyToOne
     @JoinColumn(name = "adult_id", nullable = false)
     private Adult adult;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Workshop> workshops = new ArrayList<>();
-    
+    // ✅ Seul lien correct : 1 Ticket → N Reservations
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();
 
     @Builder.Default
     private boolean confirmed = false;
 
-    // Génère un numéro unique
     @PrePersist
     public void generateTicketNumber() {
         if (this.ticketNumber == null || this.ticketNumber.isBlank()) {

@@ -11,17 +11,21 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservationDTO {
+public class TicketDTO {
 
     private Long id;
-    private LocalDate reservationDate;
+    private String ticketNumber;
 
-    private Long createdById; // id de l’adulte qui a créé la réservation
+    private String firstName;
+    private String lastName;
+    private String email;
+
+    private LocalDate visitDate;
 
     private int nbChildren;
     private int nbAdults;
-    
-    private List<Long> workshopIds;
-    // Ateliers réservés exposés en DTO
-    private List<WorkshopDTO> workshops = new ArrayList<>();
+
+    // Liste des réservations liées à ce ticket
+    private List<ReservationDTO> reservations = new ArrayList<>();
 }
+

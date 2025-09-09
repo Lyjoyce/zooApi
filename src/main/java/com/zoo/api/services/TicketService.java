@@ -7,10 +7,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.zoo.api.dtos.AdultTicketRequest;
 import com.zoo.api.entities.Adult;
 import com.zoo.api.entities.Reservation;
 import com.zoo.api.entities.Ticket;
 import com.zoo.api.entities.Workshop;
+import com.zoo.api.enums.AdultType;
 import com.zoo.api.enums.WorkshopType;
 import com.zoo.api.repositories.AdultRepository;
 import com.zoo.api.repositories.ReservationRepository;
@@ -36,81 +38,28 @@ public class TicketService {
             DayOfWeek.FRIDAY
     );
 
-    /**
-     * Création classique avec vérifications (adulte, ratio, jours autorisés, réservation…)
-     */
     @Transactional
-    public Ticket createTicket(Ticket ticket) {
-        if (ticket.getAdult() == null || ticket.getAdult().getId() == null) {
+    public Ticket createTicket(Ticket ticket, List<String> ateliers) {
+        Adult adult = ticket.getAdult();
+
+        if (adult == null || adult.getId() == null) {
             throw new RuntimeException("L'adulte associé au ticket doit être défini avec un ID.");
         }
 
-        Adult adult = adultRepository.findById(ticket.getAdult().getId())
-                .orElseThrow(() -> new RuntimeException("Adult non trouvé en base pour ID : " + ticket.getAdult().getId()));
-        ticket.setAdult(adult);
+        // Récupération sécurisée depuis la base
+        Adult persistedAdult = adultRepository.findById(adult.getId())
+                .orElseThrow(() -> new RuntimeException("Adult non trouvé pour ID : " + adult.getId()));
 
-        if (ticket.getNbAdultes() <= 0 || ticket.getNbEnfants() / ticket.getNbAdultes() > 6) {
+        if (persistedAdult.getType() == null) {
+            throw new IllegalArgumentException("Le type d'adulte doit être défini : PROFESSEUR, PARENT ou AUXILIAIRE.");
+        }
+
+        ticket.setAdult(persistedAdult);
+
+        if (ticket.getNbAdults() <= 0 || ticket.getNbChildren() / ticket.getNbAdults() > 6) {
             throw new IllegalArgumentException("1 adulte pour 6 enfants maximum.");
         }
 
-        if (!JOURS_AUTORISES.contains(ticket.getVisitDate().getDayOfWeek())) {
-            throw new IllegalArgumentException("Les ateliers sont uniquement disponibles lundi, mardi, jeudi et vendredi.");
-        }
-
-        if (ticket.getTicketNumber() == null || ticket.getTicketNumber().isBlank()) {
-            ticket.setTicketNumber("TCK-" + System.currentTimeMillis());
-        }
-
-        Ticket savedTicket = ticketRepository.save(ticket);
-
-        List<Workshop> workshops = new ArrayList<>();
-        if (ticket.getWorkshops() != null && !ticket.getWorkshops().isEmpty()) {
-            for (Workshop w : ticket.getWorkshops()) {
-                Workshop workshop = workshopRepository
-                        .findByTypeAndDate(w.getType(), ticket.getVisitDate())
-                        .orElseThrow(() -> new RuntimeException(
-                                "Atelier " + w.getType() + " introuvable pour la date " + ticket.getVisitDate()
-                        ));
-                workshops.add(workshop);
-            }
-        }
-
-        Reservation reservation = new Reservation();
-        reservation.setCreatedBy(adult);
-        reservation.setReservationDate(ticket.getVisitDate());
-        reservation.setNbAdults(ticket.getNbAdultes());
-        reservation.setNbChildren(ticket.getNbEnfants());
-        reservation.setWorkshops(workshops);
-        reservation.setTicket(savedTicket);
-
-        reservationRepository.save(reservation);
-        savedTicket.getReservations().add(reservation);
-
-        emailService.sendTicketConfirmationEmail(
-                savedTicket.getEmail(),
-                savedTicket.getFirstName(),
-                savedTicket.getLastName(),
-                savedTicket.getTicketNumber(),
-                savedTicket.getVisitDate()
-        );
-
-        return savedTicket;
-    }
-
-    @Transactional
-    public Ticket createTicketWithWorkshops(Ticket ticket, List<String> ateliers) {
-        if (ticket.getAdult() == null || ticket.getAdult().getId() == null) {
-            throw new RuntimeException("L'adulte doit être défini avec un ID.");
-        }
-
-        Adult adult = adultRepository.findById(ticket.getAdult().getId())
-                .orElseThrow(() -> new RuntimeException("Adult non trouvé pour ID : " + ticket.getAdult().getId()));
-        ticket.setAdult(adult);
-
-        // Vérifications ratio & jours
-        if (ticket.getNbAdultes() <= 0 || ticket.getNbEnfants() / ticket.getNbAdultes() > 6) {
-            throw new IllegalArgumentException("1 adulte pour 6 enfants maximum.");
-        }
         if (!JOURS_AUTORISES.contains(ticket.getVisitDate().getDayOfWeek())) {
             throw new IllegalArgumentException("Ateliers uniquement lundi, mardi, jeudi et vendredi.");
         }
@@ -119,43 +68,39 @@ public class TicketService {
             ticket.setTicketNumber("TCK-" + System.currentTimeMillis());
         }
 
-        // Récupérer les Workshops existants et les associer
-        List<Workshop> workshops = ateliers.stream().map(a -> {
-            WorkshopType type = WorkshopType.valueOf(a.toUpperCase());
-            return workshopRepository.findByTypeAndDate(type, ticket.getVisitDate())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Aucun workshop trouvé pour le type : " + type + " et la date : " + ticket.getVisitDate()
-                    ));
-        }).toList();
-
-        ticket.setWorkshops(workshops);
-        workshops.forEach(w -> w.setTicket(ticket));
-
-        // Créer la réservation associée
-        Reservation reservation = new Reservation();
-        reservation.setTicket(ticket);
-        reservation.setCreatedBy(adult);
-        reservation.setReservationDate(ticket.getVisitDate());
-        reservation.setNbAdults(ticket.getNbAdultes());
-        reservation.setNbChildren(ticket.getNbEnfants());
-        reservation.setWorkshops(workshops);
-
-        ticket.setReservation(reservation);
-
-        Ticket saved = ticketRepository.save(ticket);
-
-        // Email
-        emailService.sendTicketConfirmationEmail(
-                saved.getEmail(),
-                saved.getFirstName(),
-                saved.getLastName(),
-                saved.getTicketNumber(),
-                saved.getVisitDate()
-        );
-
-        return saved;
+        return ticketRepository.save(ticket);
     }
-    
+
+    /**
+     * Création simplifiée pour la réservation avec AdultTicketRequest
+     */
+    @Transactional
+    public Ticket reserveTicket(AdultTicketRequest request) {
+        AdultType type;
+        try {
+            type = AdultType.valueOf(request.getAdultType().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Type d'adulte invalide : " + request.getAdultType());
+        }
+
+        Adult adult = Adult.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .type(type)
+                .build();
+        adultRepository.save(adult);
+
+        Ticket ticket = Ticket.builder()
+                .visitDate(request.getVisitDate())
+                .nbAdults(request.getNbAdultes())
+                .nbChildren(request.getNbEnfants())
+                .adult(adult)
+                .build();
+
+        return createTicket(ticket, request.getAteliers());
+    }
+
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
     }
