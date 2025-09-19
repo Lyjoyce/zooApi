@@ -36,7 +36,7 @@ public class Workshop {
     @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
-    // 🔴 supprimé : la relation directe vers Ticket (déjà indirecte via Reservation)
+    // supprimé : la relation directe vers Ticket (déjà indirecte via Reservation)
 
     // Méthode pour attribuer un œuf
     public void assignEgg(Egg egg) {
