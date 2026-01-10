@@ -3,7 +3,7 @@ package com.zoo.api.services;
 import com.zoo.api.dtos.AdultTicketRequest;
 import com.zoo.api.entities.Adult;
 import com.zoo.api.entities.Ticket;
-import com.zoo.api.repositories.AdultRepository;
+import com.zoo.api.enums.AdultType;
 import com.zoo.api.repositories.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,30 +15,40 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class AdultTicketService {
 
-    private final AdultRepository adultRepository;
     private final TicketRepository ticketRepository;
     private final EmailService emailService;
 
-    private final AtomicInteger counter = new AtomicInteger(1); // pour l'incrément local (peut être stocké en BDD à terme)
+    private final AtomicInteger counter = new AtomicInteger(1); // pour l'incrément local
 
     public String makeReservation(AdultTicketRequest request) {
-        Adult adult = new Adult();
-        adult.setFirstName(request.getFirstName());
-        adult.setLastName(request.getLastName());
-        adult.setEmail(request.getEmail());
-        //adult.setType(request.getType());
+    	
+    	 // Conversion string → enum
+        AdultType adultTypeEnum = AdultType.valueOf(request.getAdultType().toUpperCase());
 
-        adult = adultRepository.save(adult);
+        Adult adult = Adult.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .type(adultTypeEnum)
+                .build();
 
+        // 🔹 Génération numéro de réservation
         String dateCode = LocalDate.now().toString().replaceAll("-", "");
         String ticketNumber = "Reservation-" + dateCode + "-" + String.format("%03d", counter.getAndIncrement());
 
-        Ticket ticket = new Ticket();
-        ticket.setTicketNumber(ticketNumber);
-        //ticket.setVisitDate(request.getVisitDate());
+        // 🔹 Création du ticket et lien vers l'adulte
+        Ticket ticket = Ticket.builder()
+                .ticketNumber(ticketNumber)       // ajouter le numéro
+                .visitDate(request.getVisitDate())
+                .nbAdults(request.getNbAdults())
+                .nbChildren(request.getNbChildren())
+                .adult(adult)                     // lien essentiel
+                .build();
+
+        // 🔹 Sauvegarde du ticket (cascade persiste l'adulte)
         ticketRepository.save(ticket);
 
-        // Envoi email
+        // 🔹 Envoi email de confirmation
         emailService.sendConfirmationEmail(
                 adult.getEmail(),
                 adult.getFirstName(),

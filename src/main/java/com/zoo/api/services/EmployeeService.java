@@ -1,8 +1,8 @@
 package com.zoo.api.services;
 
-import com.zoo.api.documents.Avis;
+
 import com.zoo.api.entities.Employee;
-import com.zoo.api.repositories.AvisRepository;
+
 import com.zoo.api.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final AvisRepository avisRepository;
+
 
     public Employee saveEmployee(Employee employee) {
         return employeeRepository.save(employee);
@@ -51,15 +51,4 @@ public class EmployeeService {
                 });
     }
 
-    public Avis validerAvis(String avisId) {
-        Avis avis = avisRepository.findById(avisId)
-                .orElseThrow(() -> new IllegalArgumentException("❌ Avis non trouvé avec l'id : " + avisId));
-
-        if (avis.isValidated()) {
-            throw new IllegalStateException("⚠️ Cet avis est déjà validé.");
-        }
-
-        avis.setValidated(true);
-        return avisRepository.save(avis);
-    }
 }

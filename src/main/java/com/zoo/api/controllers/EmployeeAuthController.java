@@ -1,23 +1,15 @@
 package com.zoo.api.controllers;
 
-import com.zoo.api.dtos.EmployeeLoginRequest;
-import com.zoo.api.dtos.EmployeeLoginResponse;
-import com.zoo.api.services.EmployeeAuthenticationService;
+//@RestController
+//@RequestMapping("/api/v1/employees")
+//@RequiredArgsConstructor
+//public class EmployeeAuthController {
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+    //private final EmployeeAuthenticationService authService;
 
-@RestController
-@RequestMapping("/api/v1/employees")
-@RequiredArgsConstructor
-public class EmployeeAuthController {
-
-    private final EmployeeAuthenticationService authService;
-
-    @PostMapping("/login")
-    public ResponseEntity<EmployeeLoginResponse> login(@RequestBody EmployeeLoginRequest request) {
-        EmployeeLoginResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
-    }
-}
+    //@PostMapping("/login")
+   // public ResponseEntity<EmployeeLoginResponse> login(@RequestBody EmployeeLoginRequest request) {
+       // EmployeeLoginResponse response = authService.login(request);
+       // return ResponseEntity.ok(response);
+   // }
+//}

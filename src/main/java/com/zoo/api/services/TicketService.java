@@ -1,37 +1,27 @@
 package com.zoo.api.services;
 
-import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.zoo.api.dtos.AdultTicketRequest;
+import com.zoo.api.entities.Adult;
+import com.zoo.api.entities.Ticket;
+import com.zoo.api.enums.AdultType;
+import com.zoo.api.repositories.TicketRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.zoo.api.dtos.AdultTicketRequest;
-import com.zoo.api.entities.Adult;
-import com.zoo.api.entities.Reservation;
-import com.zoo.api.entities.Ticket;
-import com.zoo.api.entities.Workshop;
-import com.zoo.api.enums.AdultType;
-import com.zoo.api.enums.WorkshopType;
-import com.zoo.api.repositories.AdultRepository;
-import com.zoo.api.repositories.ReservationRepository;
-import com.zoo.api.repositories.TicketRepository;
-import com.zoo.api.repositories.WorkshopRepository;
+import java.time.DayOfWeek;
+import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final AdultRepository adultRepository;
-    private final WorkshopRepository workshopRepository;
-    private final ReservationRepository reservationRepository;
     private final EmailService emailService;
 
-    private static final List<DayOfWeek> JOURS_AUTORISES = List.of(
+    private static final List<DayOfWeek> ALLOWED_DAYS = List.of(
             DayOfWeek.MONDAY,
             DayOfWeek.TUESDAY,
             DayOfWeek.THURSDAY,
@@ -39,66 +29,60 @@ public class TicketService {
     );
 
     @Transactional
-    public Ticket createTicket(Ticket ticket, List<String> ateliers) {
-        Adult adult = ticket.getAdult();
-
-        if (adult == null || adult.getId() == null) {
-            throw new RuntimeException("L'adulte associé au ticket doit être défini avec un ID.");
-        }
-
-        // Récupération sécurisée depuis la base
-        Adult persistedAdult = adultRepository.findById(adult.getId())
-                .orElseThrow(() -> new RuntimeException("Adult non trouvé pour ID : " + adult.getId()));
-
-        if (persistedAdult.getType() == null) {
-            throw new IllegalArgumentException("Le type d'adulte doit être défini : PROFESSEUR, PARENT ou AUXILIAIRE.");
-        }
-
-        ticket.setAdult(persistedAdult);
-
-        if (ticket.getNbAdults() <= 0 || ticket.getNbChildren() / ticket.getNbAdults() > 6) {
-            throw new IllegalArgumentException("1 adulte pour 6 enfants maximum.");
-        }
-
-        if (!JOURS_AUTORISES.contains(ticket.getVisitDate().getDayOfWeek())) {
-            throw new IllegalArgumentException("Ateliers uniquement lundi, mardi, jeudi et vendredi.");
-        }
-
-        if (ticket.getTicketNumber() == null || ticket.getTicketNumber().isBlank()) {
-            ticket.setTicketNumber("TCK-" + System.currentTimeMillis());
-        }
-
-        return ticketRepository.save(ticket);
-    }
-
-    /**
-     * Création simplifiée pour la réservation avec AdultTicketRequest
-     */
-    @Transactional
     public Ticket reserveTicket(AdultTicketRequest request) {
+
+        log.info("Réservation reçue : {}", request);
+
         AdultType type;
         try {
             type = AdultType.valueOf(request.getAdultType().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Type d'adulte invalide : " + request.getAdultType());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Type d'adulte invalide");
         }
 
+        if (!ALLOWED_DAYS.contains(request.getVisitDate().getDayOfWeek())) {
+            throw new IllegalArgumentException("Jour non autorisé");
+        }
+
+        if (request.getNbAdults() <= 0 ||
+            request.getNbChildren() / request.getNbAdults() > 6) {
+            throw new IllegalArgumentException("1 adulte pour 6 enfants maximum");
+        }
+
+        //  Adult (NOUVEAU)
         Adult adult = Adult.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .type(type)
                 .build();
-        adultRepository.save(adult);
 
+        //  Ticket (CASCADE PERSIST)
         Ticket ticket = Ticket.builder()
                 .visitDate(request.getVisitDate())
-                .nbAdults(request.getNbAdultes())
-                .nbChildren(request.getNbEnfants())
+                .nbAdults(request.getNbAdults())
+                .nbChildren(request.getNbChildren())
                 .adult(adult)
+                .ateliers(request.getAteliers())
                 .build();
 
-        return createTicket(ticket, request.getAteliers());
+        //  OBLIGATOIRE : génération du numéro de ticket
+        ticket.setTicketNumber("TCK-" + System.currentTimeMillis());
+        log.info("Ticket avant sauvegarde : {}", ticket);
+
+        Ticket saved = ticketRepository.save(ticket);
+
+        log.info("Ticket sauvegardé id={} numéro={}",
+                saved.getId(), saved.getTicketNumber());
+
+        emailService.sendConfirmationEmail(
+                adult.getEmail(),
+                adult.getFirstName(),
+                saved.getTicketNumber(),
+                saved.getVisitDate()
+        );
+
+        return saved;
     }
 
     public List<Ticket> getAllTickets() {

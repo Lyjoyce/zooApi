@@ -1,10 +1,9 @@
 package com.zoo.api.controllers;
 
-import com.zoo.api.documents.Avis;
+//import com.zoo.api.documents.Avis;
 import com.zoo.api.entities.Adult;
 import com.zoo.api.services.AdultService;
 import com.zoo.api.services.TicketService;
-import com.zoo.api.services.AvisService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class AdultController {
 
     private final AdultService adultService;
-    private final AvisService avisService;
     private final TicketService ticketService;
 
     @GetMapping("/{id}")
@@ -32,14 +30,6 @@ public class AdultController {
     public ResponseEntity<Adult> createAdult(@RequestBody Adult adult) {
         Adult savedAdult = adultService.saveAdult(adult);
         return ResponseEntity.ok(savedAdult);
-    }
-
-    /**
-     * Création d’un avis via ticket vérifié (nom, numéro, date).
-     */
-    @PostMapping("/avis")
-    public ResponseEntity<?> createAvisViaTicket(@RequestBody Avis avis) {
-        return avisService.createAvisWithTicketVerification(avis);
     }
 
     @PutMapping("/{id}")

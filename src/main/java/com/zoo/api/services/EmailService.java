@@ -1,6 +1,5 @@
 package com.zoo.api.services;
 
-import com.zoo.api.documents.Contact;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -51,9 +50,5 @@ public class EmailService {
      *
      * @param contact message de contact reçu
      */
-    public void sendContactEmail(Contact contact) {
-        System.out.println("✅ [SIMULATION] Contact enregistré : " + contact.getEmail()
-                + " | Sujet : " + contact.getSubject()
-                + " | Message : " + contact.getMessage());
-    }
+    
 }

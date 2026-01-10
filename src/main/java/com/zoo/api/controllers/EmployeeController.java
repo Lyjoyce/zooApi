@@ -1,8 +1,7 @@
 package com.zoo.api.controllers;
 
-import com.zoo.api.documents.Avis;
+//import com.zoo.api.documents.Avis;
 import com.zoo.api.entities.Employee;
-import com.zoo.api.services.AvisService;
 import com.zoo.api.services.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final AvisService avisService;
 
     // GET : Récupérer tous les employés
     @GetMapping
@@ -56,9 +54,4 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
- // PUT : Valider un avis via son id (retour unifié {message + avis})
-    @PutMapping("/{id}/validate")
-    public ResponseEntity<?> validerAvisParEmployee(@PathVariable String id) {
-        return avisService.validerAvis(id);
-    }
 }
