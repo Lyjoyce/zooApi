@@ -9,7 +9,6 @@ import lombok.*;
 @Entity
 @Table(name = "adult")
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Adult {
@@ -28,6 +27,14 @@ public class Adult {
     private AdultType type;
 
     @OneToMany(mappedBy = "adult", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Ticket> tickets = new ArrayList<>();
+
+    // Constructeur pratique sans builder
+    public Adult(String firstName, String lastName, String email, AdultType type) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.type = type;
+        this.tickets = new ArrayList<>();
+    }
 }

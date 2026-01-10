@@ -28,7 +28,7 @@ public class TicketService {
             DayOfWeek.THURSDAY,
             DayOfWeek.FRIDAY
     );
-
+    
     @Transactional
     public Ticket reserveTicket(AdultTicketRequest request) {
 
@@ -53,47 +53,42 @@ public class TicketService {
             throw new IllegalArgumentException("1 adulte pour 6 enfants maximum");
         }
 
-        // 4️ Création de l'objet Adult
-        Adult adult = Adult.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .type(type)
-                .build();
+        // 4️ Création de l'objet Adult directement avec le constructeur
+        Adult adult = new Adult(
+            request.getFirstName(),
+            request.getLastName(),
+            request.getEmail(),
+            type
+        );
 
         // 5️ Création du Ticket et association à l'Adult
-        Ticket ticket = Ticket.builder()
-                .visitDate(request.getVisitDate())
-                .nbAdults(request.getNbAdults())
-                .nbChildren(request.getNbChildren())
-                .ticketNumber("TCK-" + System.currentTimeMillis())
-                .ateliers(request.getAteliers())
-                .adult(adult)
-                .build();
+        Ticket ticket = new Ticket();
+        ticket.setVisitDate(request.getVisitDate());
+        ticket.setNbAdults(request.getNbAdults());
+        ticket.setNbChildren(request.getNbChildren());
+        ticket.setTicketNumber("TCK-" + System.currentTimeMillis());
+        ticket.setAteliers(request.getAteliers());
+        ticket.setAdult(adult);
 
-        //  Ajout du ticket dans la liste de l'adulte pour Hibernate
+        // 6️ Ajout du ticket dans la liste de l'adulte
         adult.getTickets().add(ticket);
 
         log.info("Ticket avant sauvegarde : {}", ticket);
 
-        // 6️ Sauvegarde (cascade persiste automatiquement l'adulte)
+        // 7️ Sauvegarde (cascade persiste automatiquement l'adulte)
         Ticket saved = ticketRepository.save(ticket);
 
         log.info("Ticket sauvegardé id={} numéro={}", saved.getId(), saved.getTicketNumber());
 
-        // 7️ Envoi email de confirmation
+        // 8️ Envoi email de confirmation
         emailService.sendConfirmationEmail(
-                adult.getEmail(),
-                adult.getFirstName(),
-                saved.getTicketNumber(),
-                saved.getVisitDate()
+            adult.getEmail(),
+            adult.getFirstName(),
+            saved.getTicketNumber(),
+            saved.getVisitDate()
         );
 
         return saved;
     }
 
-    // Récupération de tous les tickets
-    public List<Ticket> getAllTickets() {
-        return ticketRepository.findAll();
-    }
-}
+   }
